@@ -1,7 +1,11 @@
 import MySQLdb, datetime, serial, logging, time, thread
+import RPi.GPIO as GPIO
+
+import accData
 from initTTYUSBx import initTTYUSBx
 from getSpeed import getSpeed
 from getRoofSpeed import getRoofSpeed
+from getAcc import getAcc
 
 import Queue as queue
 logging.basicConfig(filename='test.log',level=logging.DEBUG)
@@ -16,6 +20,8 @@ num_stripes_panic=7
 dist_brake = 20
 read_roof=1
 read_wheel=1
+read_acc = 1
+
 
 #STATE: INITIALIZATION
 def INITIALIZATION():
@@ -37,10 +43,11 @@ def INITIALIZATION():
 
 	#TODO: figure out how these sensors get ordered each boot up
 	#send ruok to optical sensor 1
-	logging.debug("About to open serial connection to wheel 1")
+	logging.debug("About to open serial connections")
 	possible_tty = ["0","1","2"]
 	inited_tty = {}
 	for i in possible_tty:
+		#pass in list of inited_tty so we can add to it after we initialize
 		inited_tty = initTTYUSBx(i,inited_tty, logging)
 		logging.debug("initted tty is now")
 		logging.debug(inited_tty)
@@ -64,6 +71,8 @@ def PUSH(inited_tty, conn):
 		conn.commit()
 	except:
 		conn.rollback()
+	#is this a thing
+	db1.close()
 	#conn.close()
 	logging.debug("Wrote state to db")
 	x=1
@@ -72,18 +81,24 @@ def PUSH(inited_tty, conn):
 		#update speed from R wheel
 		
 		q=queue.Queue()
+		if read_acc==1:
+			thread.start_new_thread(getAcc,(accData,logging))
+			time.sleep(5)
+			#print accData.x_g
 		if read_wheel==1:
 			
 			#start all speed getting threads
-			wheel1 = thread.start_new_thread(getSpeed,(inited_tty["wheel1"],"wheel1",wheel_circumference,dist_brake, db1,conn,logging,q))
-			wheel2 = thread.start_new_thread(getSpeed,(inited_tty["wheel2"],"wheel2",wheel_circumference,dist_brake, db1,conn,logging,q))
+			wheel1 = thread.start_new_thread(getSpeed,(inited_tty["wheel1"],"wheel1",wheel_circumference,dist_brake,accData, db1,conn,logging,q))
+			wheel2 = thread.start_new_thread(getSpeed,(inited_tty["wheel2"],"wheel2",wheel_circumference,dist_brake,accData, db1,conn,logging,q))
 			
 		if read_roof==1:
-			thread.start_new_thread(getRoofSpeed,(inited_tty["roof"],"roof",num_stripes_brake,num_stripes_panic, db1,conn,logging,q))
+			thread.start_new_thread(getRoofSpeed,(inited_tty["roof"],"roof",num_stripes_brake,num_stripes_panic,accData, db1,conn,logging,q))
+
 		#will block until we get the brake command
 		q.get()
 		logging.debug("Just got a brake command")
-		time.sleep(300)
+		return conn
+		#time.sleep(300)
 				
 
 #STATE: BRAKE
@@ -93,6 +108,9 @@ def BRAKE(inited_tty,conn):
 		stripe_time=0
 		global wheel_circumference, wheel_1_dist, wheel_2_dist, num_stripes_brake, total_stripes, read_roof
 		# set database to brake
+		#set GPIO to high
+		logging.debug("Setting brake 1 to high")
+		GPIO.output(17,1)
 		logging.debug("Now in BRAKE state")
 		logging.debug("About to write BRAKE state to db")
 
@@ -100,44 +118,41 @@ def BRAKE(inited_tty,conn):
 		try:
 			db1.execute("""INSERT INTO states VALUES ( %s,%s)""",(datetime.datetime.now(), "BRAKE STARTED"))
 			conn.commit()
-		except:
+			logging.debug("Wrote state to db")
+		except Exception as e:
+			#set second brake anyways
+			GPIO.output(27,1)
+			logging.debug("DATABASE ERROR: Set 2nd brake just to make sure")
+			print e
 			conn.rollback()
-		#conn.close()
-		logging.debug("Wrote state to db")
-		# engage brake 1
-		logging.debug("BRAKING")
-		
-
-
-
+			conn.close()
 	
-				
-		# update speed from R wheel
-		# update speed from L wheel
-		# update speed from roof
-		# 	count readings(stripes)
+		logging.debug("BRAKING")
+		logging.debug("Sending Spacex Status 5")
+		#TODO: Send spacex 5(braking)
 
 
-		# update bms
-		# update acc
-		# if acceleration < expected
 		acc = 0
 		if acc>-.5:
 			logging.debug("Not detecting braking. Engage brake 2")
 		# 	engage brake 2
 	
 	
-	
-#ser1,ser2,ser3 = INITIALIZATION()
+
+
+#INIT GPIO
+#TODO: SET POD STATE 1 (IDLE)
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(True)
+GPIO.setup(17, GPIO.OUT)
 inited_tty,conn = INITIALIZATION()
+#TODO: SET POD STATE 2 (READY)
 #PUSH(ser1,ser2,ser3)
-PUSH(inited_tty,conn)
+conn = PUSH(inited_tty,conn)
 BRAKE(inited_tty,conn)
 		
 	
-	#update acc
-	#if acceleration == 0 or passed X stripes
-		#MOVE TO COAST
+
 
 #STATE: COAST
 #while True:

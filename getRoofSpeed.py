@@ -1,9 +1,14 @@
-import time, datetime
-def getRoofSpeed(ser1,ser_str,num_stripes_brake,num_stripes_panic,db1,conn,logging,q):
+import time, datetime, MySQLdb
+def getRoofSpeed(ser1,ser_str,num_stripes_brake,num_stripes_panic,accData, db1,conn,logging,q):
 	x=1
 	total_stripes=0
 	stripe_diff=datetime.timedelta(microseconds=0)
 	stripe_time=datetime.datetime.now()
+	# conn = MySQLdb.connect(host="localhost",
+	# 	user="root",
+	# 	passwd="password",
+	# 	db="test")
+	db1=conn.cursor()
 	while x==1:
 		logging.debug("Getting speed from "+ser_str)
 		bytesToRead = ser1.inWaiting()

@@ -23,6 +23,6 @@ def getAcc(accData1,podData,logging):
 		##VERY IMPORTANT
 		##THIS IS THE G FORCES WE EXPECT TO DETECT WHEN MOVING TO COAST
 		##COAST CONTROLS NOTHING FOR NOW	if pod is being pushed
-		if(moving_y_average<0 and podData.state==3):
+		#if(accData1.moving_y_average<0 and podData.state==3):
 			#set pod to coast
-			podData.state = 4
+	# 		podData.state = 4

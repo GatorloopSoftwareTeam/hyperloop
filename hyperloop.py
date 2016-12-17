@@ -17,9 +17,9 @@ wheel_circumference = 12
 wheel_1_dist=0
 wheel_2_dist=0
 total_stripes=0
-num_stripes_brake = 5
-num_stripes_panic=7
-dist_brake = 20
+num_stripes_brake = 3
+num_stripes_panic=70
+dist_brake = 40
 read_roof=1
 read_wheel=1
 read_acc = 1
@@ -57,8 +57,8 @@ def INITIALIZATION():
 	for i in possible_tty:
 		#pass in list of inited_tty so we can add to it after we initialize
 		inited_tty = initTTYUSBx(i,inited_tty, logging)
-		logging.debug("initted tty is now")
-		logging.debug(inited_tty)
+		#logging.debug("initted tty is now")
+		#logging.debug(inited_tty)
 
 	return inited_tty, conn, stateQueue
 	#read status from acc
@@ -144,13 +144,7 @@ def BRAKE(inited_tty,conn,stateQueue):
 		#send spacex state 5 (braking)
 		stateQueue.put(5)
 		return 1
-		
 
-
-		acc = 0
-		if acc>-.5:
-			logging.debug("Not detecting braking. Engage brake 2")
-		# 	engage brake 2
 
 #this monitors initial braking and checks to make sure we don't need to activate second brake
 def BRAKE2(conn):
@@ -166,6 +160,8 @@ def BRAKE2(conn):
 		##THIS IS THE G WE EXPECT BEFORE ACTIVATING THE SECOND BRAKE	
 		if accData.y_g> -.5:
 		##END IMPORTANT
+			#TODO: move data into podData
+			#If you crashed because you got here it's a good sign
 			if podData.speed>10:
 				logging.debug("brakes are not stopping fast enough. activate the second one")
 				GPIO.output(27,1)

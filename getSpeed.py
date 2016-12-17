@@ -8,7 +8,7 @@ def getSpeed(ser1,ser_str,wheel_circumference,dist_brake,accData, db1,conn,loggi
 	# 	db="test")
 	db1=conn.cursor()
 	while x==1:
-		logging.debug("Getting speed from "+ser_str)
+		#logging.debug("Getting speed from "+ser_str)
 		bytesToRead = ser1.inWaiting()
 		if bytesToRead==0:
 			time.sleep(0.5)

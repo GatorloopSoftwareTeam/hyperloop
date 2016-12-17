@@ -1,14 +1,16 @@
-import MySQLdb, datetime, serial, logging, time, thread
+import MySQLdb, datetime, serial, logging, time, thread, wiringpi
 import RPi.GPIO as GPIO
 
 import accData
+import podData
 from initTTYUSBx import initTTYUSBx
 from getSpeed import getSpeed
 from getRoofSpeed import getRoofSpeed
 from getAcc import getAcc
+from spacexTCPSender import spacexTCPSender
 
 import Queue as queue
-logging.basicConfig(filename='test.log',level=logging.DEBUG)
+logging.basicConfig(filename=('test.log'),level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler())
 
 wheel_circumference = 12
@@ -21,7 +23,7 @@ dist_brake = 20
 read_roof=1
 read_wheel=1
 read_acc = 1
-
+coast_detect=1
 
 #STATE: INITIALIZATION
 def INITIALIZATION():
@@ -39,7 +41,13 @@ def INITIALIZATION():
 	except:
 		conn.rollback()
 	#conn.close()
-	
+	stateQueue = queue.Queue()
+	#SET POD STATE 1 (IDLE)
+	logging.debug("set pod state to 1 (idle)")
+	stateQueue.put(1)
+	#Initialize the spacex message sender
+	logging.debug("started the spacex message sender")
+	thread.start_new_thread(spacexTCPSender,(stateQueue,logging))
 
 	#TODO: figure out how these sensors get ordered each boot up
 	#send ruok to optical sensor 1
@@ -52,17 +60,18 @@ def INITIALIZATION():
 		logging.debug("initted tty is now")
 		logging.debug(inited_tty)
 
-	return inited_tty, conn
+	return inited_tty, conn, stateQueue
 	#read status from acc
 		#if depressurized and if user input OK
 			#MOVE TO PUSH
 
 #STATE: PUSH
 #def PUSH(ser1,ser2,ser3, conn):
-def PUSH(inited_tty, conn):
+def PUSH(inited_tty, conn, stateQueue):
 	global wheel_circumference, wheel_1_dist, wheel_2_dist, num_stripes_brake, read_roof, total_stripes, read_roof
 	#set database to push
 	logging.debug("Now in PUSH state")
+	stateQueue.put(2)
 	logging.debug("About to write PUSH state to db")
 
 	db1=conn.cursor()
@@ -72,7 +81,7 @@ def PUSH(inited_tty, conn):
 	except:
 		conn.rollback()
 	#is this a thing
-	db1.close()
+	#db1.close()
 	#conn.close()
 	logging.debug("Wrote state to db")
 	x=1
@@ -82,7 +91,7 @@ def PUSH(inited_tty, conn):
 		
 		q=queue.Queue()
 		if read_acc==1:
-			thread.start_new_thread(getAcc,(accData,logging))
+			thread.start_new_thread(getAcc,(accData,podData,logging))
 			time.sleep(5)
 			#print accData.x_g
 		if read_wheel==1:
@@ -94,6 +103,9 @@ def PUSH(inited_tty, conn):
 		if read_roof==1:
 			thread.start_new_thread(getRoofSpeed,(inited_tty["roof"],"roof",num_stripes_brake,num_stripes_panic,accData, db1,conn,logging,q))
 
+		#if coast_detect==1:
+		#	thread.start_new_thread(coastDetect,(conn,logging))
+
 		#will block until we get the brake command
 		q.get()
 		logging.debug("Just got a brake command")
@@ -102,7 +114,7 @@ def PUSH(inited_tty, conn):
 				
 
 #STATE: BRAKE
-def BRAKE(inited_tty,conn):
+def BRAKE(inited_tty,conn,stateQueue):
 	while True:
 		stripe_diff=0
 		stripe_time=0
@@ -129,27 +141,66 @@ def BRAKE(inited_tty,conn):
 	
 		logging.debug("BRAKING")
 		logging.debug("Sending Spacex Status 5")
-		#TODO: Send spacex 5(braking)
+		#send spacex state 5 (braking)
+		stateQueue.put(5)
+		return 1
+		
 
 
 		acc = 0
 		if acc>-.5:
 			logging.debug("Not detecting braking. Engage brake 2")
 		# 	engage brake 2
-	
-	
 
+#this monitors initial braking and checks to make sure we don't need to activate second brake
+def BRAKE2(conn):
+	##VERY IMPORTANT
+	##THE TIME WE SLEEP FOR IS THE TIME WE WAIT TO SEE IF THE FIRST BRAKE WORKED AND
+	##IF WE NEED TO ACTIVATE THE SECOND BRAKE
+	time.sleep(.2)
+	##IM JUST GUESSING HERE
+	##END IMPORTANT
+	while True:
+		logging.debug("Y_G is "+str(accData.y_g))
+		##VERY IMPORTANT
+		##THIS IS THE G WE EXPECT BEFORE ACTIVATING THE SECOND BRAKE	
+		if accData.y_g> -.5:
+		##END IMPORTANT
+			if podData.speed>10:
+				logging.debug("brakes are not stopping fast enough. activate the second one")
+				GPIO.output(27,1)
+				logging.debug("second brake activated")
+			else:
+				logging.debug("not decelerating and below 10 m/s")
+				logging.debug("pod stopped")
+				return 1
+		else:
+			logging.debug("brakes are stopping fine, pod still going")
+
+def DRIVE(conn):
+	GPIO.output(17,0)
+	GPIO.output(27,0)
+	import wiringpi
+	wiringpi.wiringPiSetupGpio()
+	#GPIO 1 is hardware PWM, Mode 2 is PWM
+	wiringpi.pinMode(1,2)
+	wiringpi.pwmWrite(1,512)
 
 #INIT GPIO
-#TODO: SET POD STATE 1 (IDLE)
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(True)
+#GPIO for brake 1
 GPIO.setup(17, GPIO.OUT)
-inited_tty,conn = INITIALIZATION()
+#GPIO for brake 2
+GPIO.setup(27, GPIO.OUT)
+inited_tty,conn,stateQueue = INITIALIZATION()
 #TODO: SET POD STATE 2 (READY)
 #PUSH(ser1,ser2,ser3)
-conn = PUSH(inited_tty,conn)
-BRAKE(inited_tty,conn)
+conn = PUSH(inited_tty,conn,stateQueue)
+BRAKE(inited_tty,conn,stateQueue)
+BRAKE2(conn)
+DRIVE(conn)
 		
 	
 

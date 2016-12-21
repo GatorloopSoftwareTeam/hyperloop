@@ -1,5 +1,4 @@
 from mma8451 import MMA8451
-from accData import AccelerationData
 
 
 def getAcc(pod_data, logging):

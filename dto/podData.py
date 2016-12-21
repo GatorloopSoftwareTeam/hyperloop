@@ -1,6 +1,7 @@
-import spacexUDPSender
 import logging
-from accData import AccelerationData
+
+import spacexUDPSender
+from dto.accData import AccelerationData
 
 
 class PodData(object):

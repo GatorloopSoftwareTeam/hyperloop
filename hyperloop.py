@@ -1,19 +1,18 @@
 import Queue as queue
-
-import RPi.GPIO as GPIO
 import datetime
 import logging
 import thread
-import threading
 import time
 
+import RPi.GPIO as GPIO
+
 import Constants
-from mySQLWrapper import MySQLWrapper
+from dto.podData import PodData
 from getAcc import getAcc
 from getRoofSpeed import getRoofSpeed
 from getSpeed import getSpeed
 from initTTYUSBx import init_tty_usb_x
-from podData import PodData
+from mySQLWrapper import MySQLWrapper
 from spacexUDPSender import send_pod_data
 
 logging.basicConfig(filename=('test.log'), level=logging.DEBUG)

@@ -49,6 +49,10 @@ def INITIALIZATION():
 	logging.debug("started the spacex message sender")
 	thread.start_new_thread(spacexTCPSender,(stateQueue,logging))
 
+	logging.debug("initializing read from accelerometer")
+	thread.start_new_thread(getAcc,(accData,podData,logging))
+	time.sleep(5)
+
 	#TODO: figure out how these sensors get ordered each boot up
 	#send ruok to optical sensor 1
 	logging.debug("About to open serial connections")
@@ -88,18 +92,14 @@ def PUSH(inited_tty, conn, stateQueue):
 	#loop getting all speeds
 	while x==1:
 		#update speed from R wheel
-		
+
 		q=queue.Queue()
-		if read_acc==1:
-			thread.start_new_thread(getAcc,(accData,podData,logging))
-			time.sleep(5)
-			#print accData.x_g
 		if read_wheel==1:
-			
+
 			#start all speed getting threads
 			wheel1 = thread.start_new_thread(getSpeed,(inited_tty["wheel1"],"wheel1",wheel_circumference,dist_brake,accData, db1,conn,logging,q))
 			wheel2 = thread.start_new_thread(getSpeed,(inited_tty["wheel2"],"wheel2",wheel_circumference,dist_brake,accData, db1,conn,logging,q))
-			
+
 		if read_roof==1:
 			thread.start_new_thread(getRoofSpeed,(inited_tty["roof"],"roof",num_stripes_brake,num_stripes_panic,accData, db1,conn,logging,q))
 
@@ -111,7 +111,7 @@ def PUSH(inited_tty, conn, stateQueue):
 		logging.debug("Just got a brake command")
 		return conn
 		#time.sleep(300)
-				
+
 
 #STATE: BRAKE
 def BRAKE(inited_tty,conn,stateQueue):
@@ -138,7 +138,7 @@ def BRAKE(inited_tty,conn,stateQueue):
 			print e
 			conn.rollback()
 			conn.close()
-	
+
 		logging.debug("BRAKING")
 		logging.debug("Sending Spacex Status 5")
 		#send spacex state 5 (braking)
@@ -157,7 +157,7 @@ def BRAKE2(conn):
 	while True:
 		logging.debug("Y_G is "+str(accData.y_g))
 		##VERY IMPORTANT
-		##THIS IS THE G WE EXPECT BEFORE ACTIVATING THE SECOND BRAKE	
+		##THIS IS THE G WE EXPECT BEFORE ACTIVATING THE SECOND BRAKE
 		if accData.y_g> -.5:
 		##END IMPORTANT
 			#TODO: move data into podData
@@ -197,8 +197,8 @@ conn = PUSH(inited_tty,conn,stateQueue)
 BRAKE(inited_tty,conn,stateQueue)
 BRAKE2(conn)
 DRIVE(conn)
-		
-	
+
+
 
 
 #STATE: COAST

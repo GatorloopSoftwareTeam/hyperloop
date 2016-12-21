@@ -8,7 +8,6 @@ import threading
 import time
 
 import Constants
-import accData
 from mySQLWrapper import MySQLWrapper
 from getAcc import getAcc
 from getRoofSpeed import getRoofSpeed
@@ -56,7 +55,7 @@ def INITIALIZATION(sql_wrapper):
 
 
     # logging.debug("initializing read from accelerometer")
-    thread.start_new_thread(getAcc, (accData, pod_data, logging))
+    thread.start_new_thread(getAcc, (pod_data, logging))
     time.sleep(5)
 
     # TODO: figure out how these sensors get ordered each boot up
@@ -108,13 +107,13 @@ def PUSH(inited_tty, sql_wrapper):
     if read_wheel == 1:
         # start all speed getting threads
         wheel1 = thread.start_new_thread(getSpeed, (
-        inited_tty["wheel1"], "wheel1", wheel_circumference, dist_brake, accData, sql_wrapper, logging, q))
+        inited_tty["wheel1"], "wheel1", wheel_circumference, dist_brake, pod_data.acceleration, sql_wrapper, logging, q))
         wheel2 = thread.start_new_thread(getSpeed, (
-        inited_tty["wheel2"], "wheel2", wheel_circumference, dist_brake, accData, sql_wrapper, logging, q))
+        inited_tty["wheel2"], "wheel2", wheel_circumference, dist_brake, pod_data.acceleration, sql_wrapper, logging, q))
 
     if read_roof == 1:
         thread.start_new_thread(getRoofSpeed, (
-        inited_tty["roof"], "roof", num_stripes_brake, num_stripes_panic, accData, sql_wrapper, logging, q))
+        inited_tty["roof"], "roof", num_stripes_brake, num_stripes_panic, pod_data.acceleration, sql_wrapper, logging, q))
 
     # if coast_detect==1:
     #	thread.start_new_thread(coastDetect,(conn,logging))
@@ -173,10 +172,10 @@ def BRAKE2():
     ##END IMPORTANT
     global pod_data
     while True:
-        logging.debug("Y_G is " + str(accData.y_g))
+        logging.debug("Y_G is " + str(pod_data.acceleration.y_g))
         ##VERY IMPORTANT
         ##THIS IS THE G WE EXPECT BEFORE ACTIVATING THE SECOND BRAKE
-        if accData.y_g > -.5:
+        if pod_data.acceleration.y_g > -.5:
             ##END IMPORTANT
             # TODO: move data into podData
             # If you crashed because you got here it's a good sign

@@ -1,6 +1,6 @@
 import spacexUDPSender
 import logging
-import accData
+from accData import AccelerationData
 
 
 class PodData(object):
@@ -8,7 +8,7 @@ class PodData(object):
     def __init__(self):
         self._state = 1
         self.speed = 0
-        self.acceleration = accData
+        self.acceleration = AccelerationData()
         self.num_stripes_passed = 0
         self.wheel_1_dist = 0
         self.wheel_2_dist = 0
@@ -28,5 +28,6 @@ class PodData(object):
         return str(
             "STATE: " + str(self._state) + "," +
             "SPEED: " + str(self.speed) + "," +
-            "ACCELERATION" + str(self.acceleration) + ","
+            "ACCELERATION: X: " + str(self.acceleration.x_g) + " Y: " + str(self.acceleration.y_g) + " Z: " + str(self.acceleration.z_g) + ","
+
         )

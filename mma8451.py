@@ -5,10 +5,11 @@
 # Author: jatin kataria
 #
 
-import smbus
-import os
-import time
 import logging.config
+import os
+
+import smbus
+import time
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger('mma8451')
@@ -26,7 +27,7 @@ BW_RATE_100HZ = 0x3
 BW_RATE_50HZ = 0x4
 BW_RATE_12_5HZ = 0x5
 BW_RATE_6_25HZ = 0x6
-BW_RATE_1_56HZ = 0x7   # frequency for Low power
+BW_RATE_1_56HZ = 0x7  # frequency for Low power
 
 RANGE_2G = 0x00
 RANGE_4G = 0x01
@@ -90,7 +91,6 @@ BOARD_CPUINFO = '/proc/cpuinfo'
 
 
 class MMA8451(object):
-
     def __init__(self, address=DEFAULT_ADDRESS, bus=None,
                  sensor_range=RANGE_4G, data_rate=BW_RATE_400HZ, debug=False):
         if debug:
@@ -303,7 +303,6 @@ class MMA8451(object):
         z = round((float(z)) / RANGE_DIVIDER[self.sensor_range], 3)
 
         return {"x": x, "y": y, "z": z}
-
 
 # if __name__ == "__main__":
 #     mma8451 = MMA8451()

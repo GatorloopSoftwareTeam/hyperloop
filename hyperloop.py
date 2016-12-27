@@ -12,7 +12,7 @@ from getAcc import getAcc
 from getRoofSpeed import getRoofSpeed
 from getSpeed import getSpeed
 from initTTYUSBx import init_tty_usb_x
-from mySQLWrapper import MySQLWrapper
+from MySQLWrapper import MySQLWrapper
 from spacexUDPSender import send_pod_data
 
 logging.basicConfig(filename=('test.log'), level=logging.DEBUG)

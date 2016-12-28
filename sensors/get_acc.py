@@ -1,4 +1,4 @@
-from mma8451 import MMA8451
+from lib.mma8451 import MMA8451
 
 
 def getAcc(pod_data, logging):

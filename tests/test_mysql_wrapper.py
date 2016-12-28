@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
 import unittest
-from MySQLWrapper import *
+from mysql_wrapper import *
 from mockito import *
 import MySQLdb
 
@@ -27,10 +27,10 @@ class TestMySQLWrapper(unittest.TestCase):
 
     def test_instantiation(self):
         verify(MySQLdb, times=1).connect(
-            host=Constants.MYSQL_HOST,
-            user=Constants.MYSQL_USER,
-            passwd=Constants.MYSQL_PASSWORD,
-            db=Constants.MYSQL_DB)
+            host=constants.MYSQL_HOST,
+            user=constants.MYSQL_USER,
+            passwd=constants.MYSQL_PASSWORD,
+            db=constants.MYSQL_DB)
 
         self.assertEqual(self.mocked_logging, self.wrapper.logging)
 
@@ -38,10 +38,10 @@ class TestMySQLWrapper(unittest.TestCase):
         self.wrapper_spy.reset_connection()
 
         verify(MySQLdb, times=2).connect(
-            host=Constants.MYSQL_HOST,
-            user=Constants.MYSQL_USER,
-            passwd=Constants.MYSQL_PASSWORD,
-            db=Constants.MYSQL_DB)
+            host=constants.MYSQL_HOST,
+            user=constants.MYSQL_USER,
+            passwd=constants.MYSQL_PASSWORD,
+            db=constants.MYSQL_DB)
         verify(self.wrapper_spy, times=1).reset_connection()
 
     def test_successful_execute(self):

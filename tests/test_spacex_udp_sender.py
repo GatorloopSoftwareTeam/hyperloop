@@ -3,8 +3,8 @@ sys.path.append('../')
 import logging
 import socket
 import unittest
-from spacexUDPSender import *
-from dto.podData import PodData
+from spacex_udp_sender import *
+from dto.pod_data import PodData
 from mockito import *
 
 

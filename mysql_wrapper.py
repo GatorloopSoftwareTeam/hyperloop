@@ -1,14 +1,14 @@
 import MySQLdb
-import Constants
+import constants
 import datetime
 
 
 class MySQLWrapper:
     def __init__(self, logging):
-        self._conn = MySQLdb.connect(host=Constants.MYSQL_HOST,
-                                     user=Constants.MYSQL_USER,
-                                     passwd=Constants.MYSQL_PASSWORD,
-                                     db=Constants.MYSQL_DB)
+        self._conn = MySQLdb.connect(host=constants.MYSQL_HOST,
+                                     user=constants.MYSQL_USER,
+                                     passwd=constants.MYSQL_PASSWORD,
+                                     db=constants.MYSQL_DB)
         self.logging = logging
 
     def execute(self, query, params, retry_count=0):
@@ -32,10 +32,10 @@ class MySQLWrapper:
                 self.execute(query, params, retry_count + 1)
 
     def reset_connection(self):
-        self._conn = MySQLdb.connect(host=Constants.MYSQL_HOST,
-                                     user=Constants.MYSQL_USER,
-                                     passwd=Constants.MYSQL_PASSWORD,
-                                     db=Constants.MYSQL_DB)
+        self._conn = MySQLdb.connect(host=constants.MYSQL_HOST,
+                                     user=constants.MYSQL_USER,
+                                     passwd=constants.MYSQL_PASSWORD,
+                                     db=constants.MYSQL_DB)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._conn.close()

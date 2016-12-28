@@ -1,6 +1,6 @@
 import unittest
-from TestspacexUDPSender import TestSpacexUDPSender
-from TestMySQLWrapper import TestMySQLWrapper
+from test_spacex_udp_sender import TestSpacexUDPSender
+from test_mysql_wrapper import TestMySQLWrapper
 
 if __name__ == '__main__':
     test_classes = [TestSpacexUDPSender, TestMySQLWrapper]

@@ -1,7 +1,7 @@
 import logging
 
-import spacexUDPSender
-from dto.accData import AccelerationData
+import spacex_udp_sender
+from dto.acc_data import AccelerationData
 
 
 class PodData(object):
@@ -20,14 +20,14 @@ class PodData(object):
 
     @state.setter
     def state(self, state):
-        if state != self._state:
-            self._state = state
-            spacexUDPSender.send_pod_data(self, logging)
+        if self._state != state:
+            logging.debug("State changed from " + self._state + " to " + state)
+        self._state = state
 
     # TODO: what do we want to send to spacex?
     def to_str(self):
         return str(
-            "STATE: " + str(self._state) + "," +
+            "STATE: " + str(self.state) + "," +
             "SPEED: " + str(self.speed) + "," +
             "ACCELERATION: X: " + str(self.acceleration.x_g) + " Y: " + str(self.acceleration.y_g) + " Z: " + str(self.acceleration.z_g) + ","
 

@@ -22,7 +22,7 @@ logging.basicConfig(filename='test.log', level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler())
 pod_data = PodData()
 sql_wrapper = MySQLWrapper(logging)
-thread.start_new_thread(send_pod_data_in_interval, pod_data)
+thread.start_new_thread(send_pod_data_in_interval, (pod_data,))
 inited_tty = states.initialization_state.start(pod_data, sql_wrapper)
 while True:
     line = raw_input("Enter 1 to enter the testing state, 2 to continue to the push state")

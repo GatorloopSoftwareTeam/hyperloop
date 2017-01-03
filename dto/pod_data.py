@@ -21,7 +21,7 @@ class PodData(object):
     @state.setter
     def state(self, state):
         if self._state != state:
-            logging.debug("State changed from " + self._state + " to " + state)
+            logging.debug("State changed from " + str(self._state) + " to " + str(state))
         self._state = state
 
     # TODO: what do we want to send to spacex?

@@ -1,12 +1,11 @@
 # States
 STATE_FAULT = 0  # will cause tube run to abort
-STATE_INITIALIZATION = 1  # pod is on, but not ready to be pushed
-STATE_IDLE = 2  # pod is ready to be pushed
-STATE_CHECK_SYSTEMS = 3
-STATE_PUSH = 4  # pod is being pushed
+STATE_IDLE = 1  # pod is on, but not ready to be pushed
+STATE_READY = 2  # pod is ready to be pushed
+STATE_PUSHING = 3 # optional
+STATE_COAST = 4 # optional
 STATE_BRAKING = 5  # pod is applying brakes
-STATE_EMERGENCY = 6
-STATE_EXIT = 7  # turns off sensor data collection, disengage brakes and wait for user input
+
 
 # Spacex UDP connection info
 SPACEX_UDP_IP = "192.168.0.1"

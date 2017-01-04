@@ -2,6 +2,7 @@ import logging
 import constants
 import datetime
 import RPi.GPIO as GPIO
+from lib.MotorDrive import MotorDriver
 
 
 def start(pod_data, sql_wrapper):
@@ -9,8 +10,18 @@ def start(pod_data, sql_wrapper):
     while True:
         # set database to brake
         # set GPIO to high
-        logging.debug("Setting brake 1 to high")
-        GPIO.output(17, 1)
+        md.GPIO.setup(gpio_init.gnd, md.GPIO.OUT)
+		md.GPIO.output(gpio_init.gnd, 0)
+        main_brake = md.DualMotorDriver(gpio_init.main_brake1_pwm, gpio_init.main_brake1_dir, gpio_init.main_brake2_pwm, gpio_init.main_brake2_dir)
+
+		aux_brake = md.DualMotorDriver(gpio_init.aux_brake1_pwm, gpio_init.aux_brake1_dir, gpio_init.aux_brake2_pwm, gpio_init.aux_brake2_dir)
+
+		lin_act_right = md.MotorDriver(gpio_init.lin_act_right_pwm, gpio_init.lin_act_right_dir)
+
+		lin_act_left = md.MotorDriver(gpio_init.lin_act_left_pwm, gpio_init.lin_act_left_dir)
+
+		# Run tests
+		main_brake.test()
         sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "BRAKE STARTED"))
 
         logging.debug("BRAKING")

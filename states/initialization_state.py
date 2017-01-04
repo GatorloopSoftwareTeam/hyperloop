@@ -2,12 +2,15 @@ import datetime
 import logging
 import thread
 import time
+import socket
 
 import RPi.GPIO as GPIO
 
 import constants
+from sensors.get_bms import getBMS
 from sensors.get_acc import getAcc
 from sensors.init_tty_usb_x import init_tty_usb_x
+from sensors.init_bms import init_bms
 
 
 def start(pod_data, sql_wrapper):
@@ -25,7 +28,11 @@ def start(pod_data, sql_wrapper):
     logging.debug("set pod state to 1 (idle)")
     pod_data.state = constants.STATE_IDLE
 
-    thread.start_new_thread(getAcc, (pod_data, logging))
+    # start to recieve voltage from BMS Pi
+    init_bms(pod_data, logging)
+    thread.start_new_thread(getBMS, (pod_data, sql_wrapper, logging))
+
+    thread.start_new_thread(getAcc, (pod_data, sql_wrapper, logging))
     time.sleep(5)
 
     # TODO: figure out how these sensors get ordered each boot up

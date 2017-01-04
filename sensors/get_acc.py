@@ -1,7 +1,7 @@
 from lib.mma8451 import MMA8451
+import datetime
 
-
-def getAcc(pod_data, logging):
+def getAcc(pod_data, sql_wrapper, logging):
     acc = MMA8451()
 
     # init
@@ -18,9 +18,11 @@ def getAcc(pod_data, logging):
         logging.debug(axes)
         logging.debug("Moving y average is " + str(pod_data.acceleration.moving_y_average))
 
-        pod_data.acc_x = axes['x']
-        pod_data.acc_y = axes['y']
-        pod_data.acc_z = axes['z']
+        sql_wrapper.execute("INSERT INTO acc VALUES (%s,%s,%s,%s)", (datetime.datetime.now(), axes['x'], axes['y'], axes['z']))
+        
+        #pod_data.acc_x = axes['x']
+        #pod_data.acc_y = axes['y']
+        #pod_data.acc_z = axes['z']
 
         ##VERY IMPORTANT
         ##THIS IS THE G FORCES WE EXPECT TO DETECT WHEN MOVING TO COAST

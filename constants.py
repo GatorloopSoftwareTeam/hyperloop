@@ -18,6 +18,7 @@ MYSQL_PASSWORD = "password"
 MYSQL_DB = "test"
 
 # Sensor related
+BMS_PORT = 2001
 WHEEL_CIRCUMFERENCE = 12
 WHEEL_1_DIST = 0
 WHEEL_2_DIST = 0

@@ -13,6 +13,7 @@ class PodData(object):
         self.num_stripes_passed = 0
         self.wheel_1_dist = 0
         self.wheel_2_dist = 0
+        self.voltage = 0
 
     @property
     def state(self):

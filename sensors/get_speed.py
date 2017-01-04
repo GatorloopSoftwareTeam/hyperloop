@@ -1,6 +1,6 @@
 import MySQLdb
 import datetime
-import time
+import datetime
 
 
 def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, accData, sql_wrapper, logging, q):
@@ -10,6 +10,7 @@ def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, accData, sql_wrappe
         bytesToRead = ser1.inWaiting()
         if bytesToRead == 0:
             logging.debug("No bytes to read")
+            # TODO can probably take this out
             time.sleep(0.5)
         else:
             response = ser1.readline(bytesToRead)  ## MIGHT need to swap in a readline

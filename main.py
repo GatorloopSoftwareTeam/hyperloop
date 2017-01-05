@@ -4,11 +4,12 @@ import time
 import MySQLdb
 import sys
 import states.initialization_state
-import states.testing_state
+import states.check_systems_state
 import states.push_state
 import states.brake_state
 import states.fault_state
 import states.brake_2_state
+import states.idle_state
 
 from dto.pod_data import PodData
 from mysql_wrapper import MySQLWrapper
@@ -36,19 +37,12 @@ except MySQLdb.OperationalError, e:
     time.sleep(10)
     sys.exit(1)
 
-while True:
-    line = raw_input("Enter 1 to enter the testing state, 2 to continue to the push state")
-    if line == "1":
-        states.testing_state.start(pod_data)
-    elif line == "2":
-        break
-    else:
-        print "Invalid input"
+states.idle_state.start(pod_data, sql_wrapper)
 
 try:
     states.push_state.start(pod_data, inited_tty, sql_wrapper)
 except MySQLdb.OperationalError, e:
-    # proceed to braking
+    # figure out what to do here
     # TODO: WRONG!!!!
     pass
 

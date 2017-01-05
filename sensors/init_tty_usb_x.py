@@ -8,9 +8,11 @@ ROOF_OK_RESPONSE = "imoks\n"
 
 def init_tty_usb_x(ser_str, inited_tty, logging):
     ser1 = serial.Serial()
-    ser1.baudrate = 9600
+    ser1.baudrate = 19200
     ser1.port = "/dev/ttyUSB" + ser_str
     ser1.open()
+    ser1.flushInput()
+    ser1.flushOutput()
     while True:
         logging.debug("Sending RUOK to " + ser_str)
         ser1.write(b'r')

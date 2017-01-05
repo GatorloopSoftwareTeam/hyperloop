@@ -2,6 +2,7 @@ import MySQLdb
 import datetime
 import time
 
+
 def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, accData, sql_wrapper, logging, q):
     wheel_dist = 0
     while True:

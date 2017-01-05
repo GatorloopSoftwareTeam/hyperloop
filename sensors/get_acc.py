@@ -1,6 +1,7 @@
 from lib.mma8451 import MMA8451
 import datetime
 
+
 def getAcc(pod_data, sql_wrapper, logging):
     acc = MMA8451()
 

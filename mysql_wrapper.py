@@ -1,6 +1,7 @@
 import MySQLdb
 import constants
-import datetime
+from db_queue import DBQueue
+from query_struct import QueryStruct
 
 
 class MySQLWrapper:
@@ -10,8 +11,14 @@ class MySQLWrapper:
                                      passwd=constants.MYSQL_PASSWORD,
                                      db=constants.MYSQL_DB)
         self.logging = logging
+        self.db_queue = DBQueue(self)
 
-    def execute(self, query, params, retry_count=0):
+    def execute(self, query, params):
+        query_struct = QueryStruct(query, params)
+        self.db_queue.push(query_struct)
+
+    # only the queue should use this method
+    def execute_from_queue(self, query, params, retry_count=0):
         cursor = self._conn.cursor()
         try:
             cursor.execute(query, params)
@@ -24,7 +31,7 @@ class MySQLWrapper:
                 # this is going to fail out of initialization or initiate emergency braking
                 raise MySQLdb.OperationalError(e)
 
-            self.execute(query, params, retry_count + 1)
+            self.execute_from_queue(query, params, retry_count + 1)
 
         except Exception, e:
             cursor.close()
@@ -39,7 +46,7 @@ class MySQLWrapper:
                     return
 
                 self.reset_connection()
-                self.execute(query, params, retry_count + 1)
+                self.execute_from_queue(query, params, retry_count + 1)
 
     def reset_connection(self):
         self._conn = MySQLdb.connect(host=constants.MYSQL_HOST,

@@ -49,6 +49,7 @@ try:
     states.push_state.start(pod_data, inited_tty, sql_wrapper)
 except MySQLdb.OperationalError, e:
     # proceed to braking
+    # TODO: WRONG!!!!
     pass
 
 states.brake_state.start(pod_data, sql_wrapper)

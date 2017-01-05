@@ -1,6 +1,7 @@
 import logging
 import constants
 import datetime
+import MySQLdb
 import RPi.GPIO as GPIO
 from lib.MotorDriver import MotorDriver
 
@@ -22,7 +23,11 @@ def start(pod_data, sql_wrapper):
 
         # Run tests
         main_brake.test()
-        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "BRAKE STARTED"))
+        try:
+            sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "BRAKE STARTED"))
+        except MySQLdb.OperationalError, e:
+            # Ignore error because we need to keep braking
+            logging.error(e)
 
         logging.debug("BRAKING")
         pod_data.state = constants.STATE_BRAKING

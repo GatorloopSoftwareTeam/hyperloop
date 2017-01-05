@@ -17,11 +17,21 @@ class MySQLWrapper:
             cursor.execute(query, params)
             self._conn.commit()
             cursor.close()
+        except MySQLdb.OperationalError, e:
+            # The db has gone down
+            cursor.close()
+            if retry_count > 20:
+                # this is going to fail out of initialization or initiate emergency braking
+                raise MySQLdb.OperationalError(e)
+
+            self.execute(query, params, retry_count + 1)
+
         except Exception, e:
             cursor.close()
             self.logging.debug("Encountered exception: " + str(e) + ", when executing query: " + query)
             try:
                 self._conn.rollback()
+
             except Exception, e:
                 self.logging.debug("rollback failed with exception: " + str(e) + " . Resetting and retrying query")
                 if retry_count > 2:

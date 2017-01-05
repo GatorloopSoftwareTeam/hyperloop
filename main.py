@@ -1,10 +1,13 @@
 import logging
 import thread
 import time
+import MySQLdb
+import sys
 import states.initialization_state
 import states.testing_state
 import states.push_state
 import states.brake_state
+import states.fault_state
 import states.brake_2_state
 
 from dto.pod_data import PodData
@@ -23,7 +26,16 @@ logging.getLogger().addHandler(logging.StreamHandler())
 pod_data = PodData()
 sql_wrapper = MySQLWrapper(logging)
 thread.start_new_thread(send_pod_data_in_interval, (pod_data,))
-inited_tty = states.initialization_state.start(pod_data, sql_wrapper)
+
+try:
+    inited_tty = states.initialization_state.start(pod_data, sql_wrapper)
+except MySQLdb.OperationalError, e:
+    logging.error("Initialization state failed because of mysql operational error: " + str(e) + ". Aborting run...")
+    states.fault_state.start(pod_data, sql_wrapper)
+    # Give it time to send fault state to spacex and abort
+    time.sleep(10)
+    sys.exit(1)
+
 while True:
     line = raw_input("Enter 1 to enter the testing state, 2 to continue to the push state")
     if line == "1":
@@ -33,7 +45,12 @@ while True:
     else:
         print "Invalid input"
 
-states.push_state.start(pod_data, inited_tty, sql_wrapper)
+try:
+    states.push_state.start(pod_data, inited_tty, sql_wrapper)
+except MySQLdb.OperationalError, e:
+    # proceed to braking
+    pass
+
 states.brake_state.start(pod_data, sql_wrapper)
 states.brake_2_state.start()
 

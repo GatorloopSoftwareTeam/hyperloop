@@ -17,10 +17,6 @@ def start(pod_data, sql_wrapper):
 
         aux_brake = md.DualMotorDriver(gpio_init.aux_brake1_pwm, gpio_init.aux_brake1_dir, gpio_init.aux_brake2_pwm, gpio_init.aux_brake2_dir)
 
-        lin_act_right = md.MotorDriver(gpio_init.lin_act_right_pwm, gpio_init.lin_act_right_dir)
-
-        lin_act_left = md.MotorDriver(gpio_init.lin_act_left_pwm, gpio_init.lin_act_left_dir)
-
         # Run tests
         main_brake.test()
         try:

@@ -15,6 +15,12 @@ class PodData(object):
         self.wheel_2_dist = 0
         self.v_val = 0
         self.vs_val = 0
+        self.main_battery_1_temp = 0
+        self.main_battery_2_temp = 0
+        self.main_battery_3_temp = 0
+        self.aux_battery_1_temp = 0
+        self.aux_battery_2_temp = 0
+        self.aux_battery_3_temp = 0
 
     @property
     def state(self):

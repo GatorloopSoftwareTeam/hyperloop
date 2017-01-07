@@ -1,5 +1,6 @@
 from lib.mma8451 import MMA8451
 import datetime
+import constants
 
 
 def getAcc(pod_data, sql_wrapper, logging):
@@ -15,6 +16,7 @@ def getAcc(pod_data, sql_wrapper, logging):
         pod_data.acceleration.x_g = axes['x']
         pod_data.acceleration.y_g = axes['y']
         pod_data.acceleration.z_g = axes['z']
+
         pod_data.acceleration.moving_y_average = .5 * pod_data.acceleration.moving_y_average + .5 * pod_data.acceleration.y_g
         logging.debug(axes)
         logging.debug("Moving y average is " + str(pod_data.acceleration.moving_y_average))

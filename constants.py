@@ -30,3 +30,22 @@ READ_ROOF = 1
 READ_WHEEL = 1
 READ_ACC = 1
 COAST_DETECT = 1
+
+"""
+Minimum Y direction G force that we consider the pod to be in the push state
+"""
+MIN_PUSH_ACCELERATION = 1.0
+
+"""
+Total time that the pusher is active (in seconds)
+"""
+TOTAL_PUSH_TIME = 4.0
+
+
+# Battery temperature sensors
+MAIN_BATTERY_1 = "28-0416513911ff"
+MAIN_BATTERY_2 = "28-03164546f2ff"
+MAIN_BATTERY_3 = "28-041650bd37ff"
+AUX_BATTERY_1 = "28-041652b584ff"
+AUX_BATTERY_2 = "28-0416508ce6ff"
+AUX_BATTERY_3 = "28-0316457ef7ff"

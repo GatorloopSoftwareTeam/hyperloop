@@ -51,8 +51,9 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial.setTimeout(100);
-   Serial1.begin(9600);
-   while (!Serial1) {
+
+  Serial1.begin(9600);
+  while (!Serial1) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial1.setTimeout(100);
@@ -113,17 +114,17 @@ void readByte(String inByte, int pi){
       // DIR  States of Pi 1
       pi1_la_dir[pi] = 1;
     }
-    else if ( inByte == "SM")
+    else if ( inByte == "OM")
     {
       pi1_mb_pwm[pi] = 0;
       pi1_mb_dir[pi] = 0;
     }
-    else if ( inByte == "SA")
+    else if ( inByte == "OA")
     {
       pi1_ab_pwm[pi] = 0;
       pi1_ab_dir[pi] = 0;
     }
-    else if ( inByte == "SL")
+    else if ( inByte == "OL")
     {
       pi1_la_pwm[pi] = 0;
       pi1_la_dir[pi] = 0;

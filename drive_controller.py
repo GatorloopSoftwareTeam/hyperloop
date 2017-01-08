@@ -10,17 +10,19 @@ LOWER_LINEAR_ACTUATORS = "LL"
 RAISE_LINEAR_ACTUATORS = "RL"
 FORWARD = "FW"
 BACKWARD = "BW"
+OFF_BRAKES = "OM"
+OFF_AUXILIARY = "OA"
+OFF_LINEAR_ACTUATORS = "OL"
 
 
 class DriveController:
     def __init__(self):
         self.ser = serial.Serial(
-            port='/dev/ttyAMA0',
+            port='/dev/ttyS0',
             baudrate=9600,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
-            bytesize=serial.EIGHTBITS,
-            timeout=1
+            bytesize=serial.EIGHTBITS
         )
 
     def send_ok(self):
@@ -49,3 +51,12 @@ class DriveController:
 
     def send_release_auxiliary_brakes(self):
         self.ser.write(RELEASE_AUXILIARY)
+
+    def send_off_main_brakes(self):
+        self.ser.write(OFF_BRAKES)
+
+    def send_off_auxiliary_brakes(self):
+        self.ser.write(OFF_AUXILIARY)
+
+    def send_off_linear_actuators(self):
+        self.ser.write(OFF_LINEAR_ACTUATORS)

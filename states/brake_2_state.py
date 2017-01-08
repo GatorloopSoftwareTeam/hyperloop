@@ -3,7 +3,7 @@ import logging
 import RPi.GPIO as GPIO
 
 
-def start():
+def start(pod_data, drive_controller):
     # this monitors initial braking and checks to make sure we don't need to activate second brake
     ##VERY IMPORTANT
     ##THE TIME WE SLEEP FOR IS THE TIME WE WAIT TO SEE IF THE FIRST BRAKE WORKED AND
@@ -11,7 +11,6 @@ def start():
     time.sleep(.2)
     ##IM JUST GUESSING HERE
     ##END IMPORTANT
-    global pod_data
     while True:
         logging.debug("Y_G is " + str(pod_data.acceleration.y_g))
         ##VERY IMPORTANT
@@ -22,7 +21,7 @@ def start():
             # If you crashed because you got here it's a good sign
             if pod_data.speed > 10:
                 logging.debug("brakes are not stopping fast enough. activate the second one")
-                GPIO.output(27, 1)
+                drive_controller.send_engage_auxiliary_brakes()
                 logging.debug("second brake activated")
             else:
                 logging.debug("not decelerating and below 10 m/s")

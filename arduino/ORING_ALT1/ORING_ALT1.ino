@@ -79,55 +79,88 @@ void setup() {
 void readByte(String inByte, int pi){
   if ( inByte == "EM")
     {
-      pi1_mb_pwm[pi] = 1;
+      pi1_mb_pwm[0] = 1;
       // DIR  States of Pi 1
-      pi1_mb_dir[pi] = 0;
+      pi1_mb_dir[0] = 0;
+      
+      pi1_mb_pwm[1] = 1;
+      // DIR  States of Pi 1
+      pi1_mb_dir[1] = 0;
     }
     else if ( inByte == "RM")
     {
-      pi1_mb_pwm[pi] = 1;        
+      pi1_mb_pwm[0] = 1;        
       // DIR  States of Pi 1
-      pi1_mb_dir[pi] = 1;
+      pi1_mb_dir[0] = 1;
+      
+      pi1_mb_pwm[1] = 1;        
+      // DIR  States of Pi 1
+      pi1_mb_dir[1] = 1;
     }
     else if ( inByte == "EA")
     {
-      pi1_ab_pwm[pi] = 1;      
+      pi1_ab_pwm[0] = 1;      
       // DIR  States of Pi 1
-      pi1_ab_dir[pi] = 0;
+      pi1_ab_dir[0] = 0;
+      
+      pi1_ab_pwm[1] = 1;      
+      // DIR  States of Pi 1
+      pi1_ab_dir[1] = 0;
     }
     else if ( inByte == "RA")
     {
-      pi1_ab_pwm[pi] = 1;      
+      pi1_ab_pwm[0] = 1;      
       // DIR  States of Pi 1
-      pi1_ab_dir[pi] = 1;
+      pi1_ab_dir[0] = 1;
+      
+      pi1_ab_pwm[1] = 1;      
+      // DIR  States of Pi 1
+      pi1_ab_dir[1] = 1;
     }
 
     else if ( inByte == "LL")
     {
-      pi1_la_pwm[pi] = 1;        
+      pi1_la_pwm[0] = 1;
       // DIR  States of Pi 1
-      pi1_la_dir[pi] = 0;
+      pi1_la_dir[0] = 0;
+
+      pi1_la_pwm[1] = 1;
+      // DIR  States of Pi 1
+      pi1_la_dir[1] = 0;
     }
     else if ( inByte == "RL")
     {
-      pi1_la_pwm[pi] = 1;       
+      pi1_la_pwm[0] = 1;
       // DIR  States of Pi 1
-      pi1_la_dir[pi] = 1;
+      pi1_la_dir[0] = 1;
+
+      pi1_la_pwm[1] = 1;
+      // DIR  States of Pi 1
+      pi1_la_dir[1] = 1;
     }
     else if ( inByte == "OM")
     {
-      pi1_mb_pwm[pi] = 0;
-      pi1_mb_dir[pi] = 0;
+      pi1_mb_pwm[0] = 0;
+      pi1_mb_dir[0] = 0;
+      
+      pi1_mb_pwm[1] = 0;
+      pi1_mb_dir[1] = 0;
     }
     else if ( inByte == "OA")
     {
-      pi1_ab_pwm[pi] = 0;
-      pi1_ab_dir[pi] = 0;
+      pi1_ab_pwm[0] = 0;
+      pi1_ab_dir[0] = 0;
+
+      pi1_ab_pwm[1] = 0;
+      pi1_ab_dir[1] = 0;
     }
     else if ( inByte == "OL")
     {
-      pi1_la_pwm[pi] = 0;
-      pi1_la_dir[pi] = 0;
+      pi1_la_pwm[0] = 0;
+      pi1_la_dir[0] = 0;
+
+      pi1_la_pwm[1] = 0;
+      pi1_la_dir[1] = 0;
     }
 
 

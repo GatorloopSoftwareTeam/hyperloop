@@ -1,7 +1,8 @@
 import MySQLdb
+
 import constants
 from db_queue import DBQueue
-from query_struct import QueryStruct
+from dto.query_struct import QueryStruct
 
 
 class MySQLWrapper:

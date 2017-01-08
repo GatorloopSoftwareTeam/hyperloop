@@ -1,6 +1,7 @@
 import logging
 import thread
 import time
+import datetime
 import MySQLdb
 import sys
 import states.initialization_state
@@ -10,6 +11,8 @@ import states.brake_state
 import states.fault_state
 import states.brake_2_state
 import states.idle_state
+import states.sensor_data_acquisition_state
+import states.ready_state
 
 from dto.pod_data import PodData
 from mysql_wrapper import MySQLWrapper
@@ -38,6 +41,8 @@ except MySQLdb.OperationalError, e:
     sys.exit(1)
 
 states.idle_state.start(pod_data, sql_wrapper)
+states.sensor_data_acquisition_state.start(pod_data, sql_wrapper)
+states.ready_state.start(pod_data, sql_wrapper)
 
 try:
     states.push_state.start(pod_data, inited_tty, sql_wrapper)

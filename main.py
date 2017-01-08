@@ -14,9 +14,14 @@ import states.idle_state
 import states.sensor_data_acquisition_state
 import states.ready_state
 
+import states.sensor_data_acquisition_state
+import states.drive_state
+import states.ready_state
+
 from dto.pod_data import PodData
 from mysql_wrapper import MySQLWrapper
 from spacex_udp_sender import send_pod_data
+from drive_controller import DriveController
 
 
 def send_pod_data_in_interval(data):
@@ -51,8 +56,10 @@ except MySQLdb.OperationalError, e:
     # TODO: WRONG!!!!
     pass
 
-states.brake_state.start(pod_data, sql_wrapper)
-states.brake_2_state.start()
+drive_controller = DriveController()
+states.brake_state.start(pod_data, sql_wrapper, drive_controller)
+states.brake_2_state.start(pod_data, drive_controller)
+states.drive_state.start(sql_wrapper, drive_controller)
 
 # DRIVE(conn)
 

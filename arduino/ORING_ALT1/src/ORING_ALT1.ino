@@ -1,12 +1,6 @@
 #include <Arduino.h>
 
-// constants won't change. They're used here to
-// set pin numbers:
-//INPUTS FOR PI 1
-// Input A is PWM
-String inByte;
-String inByte1;
-
+// Specify pins
 int mb1_dir_pin = 52;
 int mb2_dir_pin = 50;
 
@@ -29,19 +23,22 @@ boolean stopped_flag;
 
 void setup() {
 
-// Open serial communications and wait for port to open:
+  // Open serial communications and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial.setTimeout(10);
+  Serial.print("Serial for Pi1 initialized\n");
 
   Serial1.begin(9600);
   while (!Serial1) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial1.setTimeout(10);
+  Serial.print("Serial for Pi2 initialized\n");
 
+  // Set pin directions
   pinMode(mb1_dir_pin, OUTPUT);
   pinMode(mb2_dir_pin, OUTPUT);
   pinMode(mb1_pwm_pin, OUTPUT);
@@ -57,6 +54,7 @@ void setup() {
   pinMode(la1_pwm_pin, OUTPUT);
   pinMode(la2_pwm_pin, OUTPUT);
 
+  // Clear stopped_flag
   stopped_flag = false;
 }
 
@@ -132,69 +130,118 @@ void offLinearActuators() {
   digitalWrite(la2_dir_pin, LOW);
 }
 
-void sendAcknowledgement(String state) {
-  Serial.print(state);
-  Serial1.print(state);
+void sendAcknowledgement(String state, int piNumber) {
+  if (piNumber == 1){
+    Serial.print(state);
+
+  } else if (piNumber == 2) {
+    Serial1.print(state);
+
+  } else {
+    Serial.print(state);
+    Serial1.print(state);
+
+  }
 }
 
-boolean takeActionOnByte(String inByte){
+void sendStatus(int piNumber){
+  if (stopped_flag == true) {
+    sendAcknowledgement("Pod is Stopped \n", piNumber);
+  } else{
+    sendAcknowledgement("Pod is Running \n", piNumber);
+  }
+}
+
+boolean takeActionOnByte(String inByte, int piNumber){
   if (inByte == "EM") {
     engageMainBrakes();
-    sendAcknowledgement(inByte);
+    sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte == "EA") {
     engageAuxiliaryBrakes();
-    sendAcknowledgement(inByte);
+    sendAcknowledgement(inByte + "\n", piNumber);
 
-  } else if (inByte == "RM" && stopped_flag) {
-    releaseMainBrakes();
-    sendAcknowledgement(inByte);
+  } else if (inByte == "RM") {
+    if (stopped_flag == true){
+      releaseMainBrakes();
+      sendAcknowledgement(inByte + "\n", piNumber);
+    } else{
+      sendAcknowledgement(inByte + " Ignored\n", piNumber);
+    }
 
-  } else if (inByte == "RA" && stopped_flag) {
-    releaseAuxiliaryBrakes();
-    sendAcknowledgement(inByte);
+  } else if (inByte == "RA") {
+    if (stopped_flag == true){
+      releaseAuxiliaryBrakes();
+      sendAcknowledgement(inByte + "\n", piNumber);
+    } else{
+      sendAcknowledgement(inByte + " Ignored\n", piNumber);
+    }
 
-  } else if (inByte == "LL" && stopped_flag) {
-    lowerLinearActuators();
-    sendAcknowledgement(inByte);
+  } else if (inByte == "LL") {
+    if (stopped_flag == true){
+      lowerLinearActuators();
+      sendAcknowledgement(inByte + "\n", piNumber);
+    } else{
+      sendAcknowledgement(inByte + " Ignored\n", piNumber);
+    }
 
-  } else if (inByte == "RL" && stopped_flag) {
-    raiseLinearActuators();
-    sendAcknowledgement(inByte);
+  } else if (inByte == "RL") {
+    if (stopped_flag == true){
+      raiseLinearActuators();
+      sendAcknowledgement(inByte + "\n", piNumber);
+    } else{
+      sendAcknowledgement(inByte + " Ignored\n", piNumber);
+    }
 
-  } else if (inByte == "OM" && stopped_flag) {
-    offMainBrakes();
-    sendAcknowledgement(inByte);
+  } else if (inByte == "OM") {
+    if (stopped_flag == true){
+      offMainBrakes();
+      sendAcknowledgement(inByte + "\n", piNumber);
+    } else{
+      sendAcknowledgement(inByte + " Ignored\n", piNumber);
+    }
 
-  } else if (inByte == "OA" && stopped_flag) {
-    offAuxiliaryBrakes();
-    sendAcknowledgement(inByte);
+  } else if (inByte == "OA") {
+    if (stopped_flag == true){
+      offAuxiliaryBrakes();
+      sendAcknowledgement(inByte + "\n", piNumber);
+    } else{
+      sendAcknowledgement(inByte + " Ignored\n", piNumber);
+    }
 
-  } else if (inByte == "OL" && stopped_flag) {
-    offLinearActuators();
-    sendAcknowledgement(inByte);
-
-  } else if (inByte == "IG") {
-    sendAcknowledgement(inByte);
+  } else if (inByte == "OL") {
+    if (stopped_flag == true){
+      offLinearActuators();
+      sendAcknowledgement(inByte + "\n", piNumber);
+    } else{
+      sendAcknowledgement(inByte + " Ignored\n", piNumber);
+    }
 
   } else if (inByte == "RUOK") {
-    sendAcknowledgement("IMOK");
+    sendAcknowledgement("IMOK \n", piNumber);
 
   } else if (inByte == "KILLALL"){
     offMainBrakes();
     offAuxiliaryBrakes();
     offLinearActuators();
-    sendAcknowledgement(inByte);
+    sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte == "STOPPED"){
     stopped_flag = true;
-    sendAcknowledgement(inByte);
+    sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte == "RUNNING"){
     stopped_flag = false;
-    sendAcknowledgement(inByte);
+    sendAcknowledgement(inByte + "\n", piNumber);
+
+  } else if (inByte == "STATUS"){
+    sendStatus(piNumber);
 
   } else {
+    if (inByte.length() != 0){
+        sendAcknowledgement(inByte + " Invalid Command\n", piNumber);
+    }
+    
     return false;
 
   }
@@ -205,6 +252,8 @@ boolean takeActionOnByte(String inByte){
 void loop() {
   String pi1InByte, pi2InByte;
 
+  // Read serial input if available. Each command should end with the
+  // asterisk (*) to be able to distinguish them.
   if (Serial.available() > 0)
   {
     pi1InByte = Serial.readStringUntil('*');
@@ -214,19 +263,15 @@ void loop() {
     pi2InByte = Serial1.readStringUntil('*');
   }
 
-  takeActionOnByte(pi1InByte);
-  takeActionOnByte(pi2InByte);
+  // Take action upon inputs, prioritizing braking singals.
+  if (pi1InByte == "EM" || pi2InByte == "EM") {
+    takeActionOnByte("EM", 3);
 
-  // if (pi1InByte == "EM" || pi2InByte == "EM") {
-  //   takeActionOnByte("EM");
-  //
-  // } else if (pi1InByte == "EA" || pi2InByte == "EA") {
-  //   takeActionOnByte("EA");
-  //
-  // } else if (pi1InByte == "STOPPED" || pi2InByte == "STOPPED") {
-  //   takeActionOnByte("STOPPED");
-  //
-  // } else{
-  //   ;
-  // }
+  } else if (pi1InByte == "EA" || pi2InByte == "EA") {
+    takeActionOnByte("EA", 3);
+
+  } else{
+    takeActionOnByte(pi1InByte, 1);
+    takeActionOnByte(pi2InByte, 2);
+  }
 }

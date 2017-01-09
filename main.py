@@ -15,6 +15,7 @@ import states.sensor_data_acquisition_state
 import states.ready_state
 
 import states.sensor_data_acquisition_state
+import states.wait_for_pod_to_stop_state
 import states.drive_state
 import states.ready_state
 
@@ -30,20 +31,28 @@ def send_pod_data_in_interval(data):
         time.sleep(.1)
 
 
+def enter_fault_state():
+    states.fault_state.start(pod_data, sql_wrapper)
+    # Give it time to send fault state to spacex and abort
+    time.sleep(10)
+    sys.exit(1)
+
+
 logging.basicConfig(filename='test.log', level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler())
 pod_data = PodData()
 sql_wrapper = MySQLWrapper(logging)
 thread.start_new_thread(send_pod_data_in_interval, (pod_data,))
+drive_controller = DriveController()
 
 try:
-    inited_tty = states.initialization_state.start(pod_data, sql_wrapper)
+    inited_tty = states.initialization_state.start(pod_data, sql_wrapper, drive_controller)
 except MySQLdb.OperationalError, e:
     logging.error("Initialization state failed because of mysql operational error: " + str(e) + ". Aborting run...")
-    states.fault_state.start(pod_data, sql_wrapper)
-    # Give it time to send fault state to spacex and abort
-    time.sleep(10)
-    sys.exit(1)
+    enter_fault_state()
+except RuntimeError, e:
+    logging.error(e)
+    enter_fault_state()
 
 states.idle_state.start(pod_data, sql_wrapper)
 states.sensor_data_acquisition_state.start(pod_data, sql_wrapper)
@@ -56,9 +65,9 @@ except MySQLdb.OperationalError, e:
     # TODO: WRONG!!!!
     pass
 
-drive_controller = DriveController()
 states.brake_state.start(pod_data, sql_wrapper, drive_controller)
 states.brake_2_state.start(pod_data, drive_controller)
+states.wait_for_pod_to_stop_state.start(pod_data, sql_wrapper, drive_controller)
 states.drive_state.start(sql_wrapper, drive_controller)
 
 # DRIVE(conn)

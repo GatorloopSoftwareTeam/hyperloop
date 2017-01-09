@@ -154,9 +154,9 @@ void sendAcknowledgement(String state, int piNumber) {
 
 void sendStatus(int piNumber){
   if (stopped_flag == true) {
-    sendAcknowledgement("Pod is Stopped \n", piNumber);
+    sendAcknowledgement("Pod is Stopped\n", piNumber);
   } else{
-    sendAcknowledgement("Pod is Running \n", piNumber);
+    sendAcknowledgement("Pod is Running\n", piNumber);
   }
 }
 
@@ -247,7 +247,7 @@ boolean takeActionOnByte(String inByte, int piNumber){
     }
 
   } else if (inByte == "RUOK") {
-    sendAcknowledgement("IMOK \n", piNumber);
+    sendAcknowledgement("IMOK\n", piNumber);
 
   } else if (inByte == "KILLALL"){
     // Turn off All motors

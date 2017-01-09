@@ -19,7 +19,9 @@ int la2_dir_pin = 51;
 int la1_pwm_pin = 6;
 int la2_pwm_pin = 7;
 
-boolean stopped_flag;
+boolean stopped_flag = false;
+long brake_release_time = 1.5 * 1000;
+long actuator_active_time = 1.5 * 1000;
 
 void setup() {
 
@@ -154,46 +156,65 @@ void sendStatus(int piNumber){
 
 boolean takeActionOnByte(String inByte, int piNumber){
   if (inByte == "EM") {
+    // Engage Main Brakes
     engageMainBrakes();
     sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte == "EA") {
+    // Engage Auxiliary Brakes
     engageAuxiliaryBrakes();
     sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte == "RM") {
+    // Release Main Brakes
     if (stopped_flag == true){
+      offMainBrakes();
       releaseMainBrakes();
+      delay(brake_release_time);
+      offMainBrakes();
       sendAcknowledgement(inByte + "\n", piNumber);
     } else{
       sendAcknowledgement(inByte + " Ignored\n", piNumber);
     }
 
   } else if (inByte == "RA") {
+    // Release Auxiliary Brakes
     if (stopped_flag == true){
+      offAuxiliaryBrakes();
       releaseAuxiliaryBrakes();
+      delay(brake_release_time);
+      offAuxiliaryBrakes();
       sendAcknowledgement(inByte + "\n", piNumber);
     } else{
       sendAcknowledgement(inByte + " Ignored\n", piNumber);
     }
 
   } else if (inByte == "LL") {
+    // Lower Linear Actuators
     if (stopped_flag == true){
+      offLinearActuators();
       lowerLinearActuators();
+      delay(actuator_active_time);
+      offLinearActuators();
       sendAcknowledgement(inByte + "\n", piNumber);
     } else{
       sendAcknowledgement(inByte + " Ignored\n", piNumber);
     }
 
   } else if (inByte == "RL") {
+    // Raise Linear Actuators
     if (stopped_flag == true){
+      offLinearActuators();
       raiseLinearActuators();
+      delay(actuator_active_time);
+      offLinearActuators();
       sendAcknowledgement(inByte + "\n", piNumber);
     } else{
       sendAcknowledgement(inByte + " Ignored\n", piNumber);
     }
 
   } else if (inByte == "OM") {
+    // Turn off Main Brakes
     if (stopped_flag == true){
       offMainBrakes();
       sendAcknowledgement(inByte + "\n", piNumber);
@@ -202,6 +223,7 @@ boolean takeActionOnByte(String inByte, int piNumber){
     }
 
   } else if (inByte == "OA") {
+    // Turn off Auxiliary Brakes
     if (stopped_flag == true){
       offAuxiliaryBrakes();
       sendAcknowledgement(inByte + "\n", piNumber);
@@ -210,6 +232,7 @@ boolean takeActionOnByte(String inByte, int piNumber){
     }
 
   } else if (inByte == "OL") {
+    // Turn off Linear Actuators
     if (stopped_flag == true){
       offLinearActuators();
       sendAcknowledgement(inByte + "\n", piNumber);
@@ -221,6 +244,7 @@ boolean takeActionOnByte(String inByte, int piNumber){
     sendAcknowledgement("IMOK \n", piNumber);
 
   } else if (inByte == "KILLALL"){
+    // Turn off All motors
     offMainBrakes();
     offAuxiliaryBrakes();
     offLinearActuators();
@@ -238,10 +262,11 @@ boolean takeActionOnByte(String inByte, int piNumber){
     sendStatus(piNumber);
 
   } else {
+    // Handle invalid or empty commands
     if (inByte.length() != 0){
         sendAcknowledgement(inByte + " Invalid Command\n", piNumber);
     }
-    
+
     return false;
 
   }

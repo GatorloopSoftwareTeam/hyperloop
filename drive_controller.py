@@ -17,6 +17,9 @@ OFF_BRAKES = constants.OFF_BRAKES + END_OF_MESSAGE
 OFF_AUXILIARY = constants.OFF_AUXILIARY + END_OF_MESSAGE
 OFF_LINEAR_ACTUATORS = constants.OFF_LINEAR_ACTUATORS + END_OF_MESSAGE
 STOPPED = constants.STOPPED + END_OF_MESSAGE
+KILL_ALL = constants.KILL_ALL + END_OF_MESSAGE
+RUNNING = constants.RUNNING + END_OF_MESSAGE
+STATUS = constants.STATUS + END_OF_MESSAGE
 
 OK_RESPONSE = "IAMOK"
 
@@ -78,3 +81,15 @@ class DriveController:
 
     def send_stopped(self):
         self.ser.write(STOPPED)
+
+    def send_kill_all(self):
+        self.ser.write(KILL_ALL)
+
+    def send_running(self):
+        self.ser.write(RUNNING)
+
+    def get_status(self):
+        self.ser.write(STATUS)
+        response = self.get_response()
+        print "Pod status = " + response
+        return response

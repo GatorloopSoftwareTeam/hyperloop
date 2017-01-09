@@ -295,14 +295,14 @@ void loop() {
   }
 
   // Take action upon inputs, prioritizing braking singals.
-  if (pi1InByte == "EM" || pi2InByte == "EM") {
-    takeActionOnByte("EM", 3);
-
-  } else if (pi1InByte == "EA" || pi2InByte == "EA") {
-    takeActionOnByte("EA", 3);
-
-  } else{
-    takeActionOnByte(pi1InByte, 1);
-    takeActionOnByte(pi2InByte, 2);
-  }
+  // if (pi1InByte == "EM" || pi2InByte == "EM") {
+  //   takeActionOnByte("EM", 3);
+  //
+  // } else if (pi1InByte == "EA" || pi2InByte == "EA") {
+  //   takeActionOnByte("EA", 3);
+  //
+  // } else{
+  takeActionOnByte(pi1InByte, 1);
+  takeActionOnByte(pi2InByte, 2);
+  // }
 }

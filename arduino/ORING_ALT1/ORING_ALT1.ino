@@ -4,15 +4,6 @@
 // set pin numbers:
 //INPUTS FOR PI 1
 // Input A is PWM
-boolean pi1_mb_pwm[2];
-boolean pi1_mb_dir[2];
-
-boolean pi1_ab_pwm[2];
-boolean pi1_ab_dir[2];
-
-boolean pi1_la_pwm[2];
-boolean pi1_la_dir[2];
-
 String inByte;
 String inByte1;
 
@@ -75,145 +66,156 @@ void setup() {
   
 }
 
-
-void readByte(String inByte, int pi){
-  if ( inByte == "EM")
-    {
-      pi1_mb_pwm[0] = 1;
-      // DIR  States of Pi 1
-      pi1_mb_dir[0] = 0;
-      
-      pi1_mb_pwm[1] = 1;
-      // DIR  States of Pi 1
-      pi1_mb_dir[1] = 0;
-    }
-    else if ( inByte == "RM")
-    {
-      pi1_mb_pwm[0] = 1;        
-      // DIR  States of Pi 1
-      pi1_mb_dir[0] = 1;
-      
-      pi1_mb_pwm[1] = 1;        
-      // DIR  States of Pi 1
-      pi1_mb_dir[1] = 1;
-    }
-    else if ( inByte == "EA")
-    {
-      pi1_ab_pwm[0] = 1;      
-      // DIR  States of Pi 1
-      pi1_ab_dir[0] = 0;
-      
-      pi1_ab_pwm[1] = 1;      
-      // DIR  States of Pi 1
-      pi1_ab_dir[1] = 0;
-    }
-    else if ( inByte == "RA")
-    {
-      pi1_ab_pwm[0] = 1;      
-      // DIR  States of Pi 1
-      pi1_ab_dir[0] = 1;
-      
-      pi1_ab_pwm[1] = 1;      
-      // DIR  States of Pi 1
-      pi1_ab_dir[1] = 1;
-    }
-
-    else if ( inByte == "LL")
-    {
-      pi1_la_pwm[0] = 1;
-      // DIR  States of Pi 1
-      pi1_la_dir[0] = 0;
-
-      pi1_la_pwm[1] = 1;
-      // DIR  States of Pi 1
-      pi1_la_dir[1] = 0;
-    }
-    else if ( inByte == "RL")
-    {
-      pi1_la_pwm[0] = 1;
-      // DIR  States of Pi 1
-      pi1_la_dir[0] = 1;
-
-      pi1_la_pwm[1] = 1;
-      // DIR  States of Pi 1
-      pi1_la_dir[1] = 1;
-    }
-    else if ( inByte == "OM")
-    {
-      pi1_mb_pwm[0] = 0;
-      pi1_mb_dir[0] = 0;
-      
-      pi1_mb_pwm[1] = 0;
-      pi1_mb_dir[1] = 0;
-    }
-    else if ( inByte == "OA")
-    {
-      pi1_ab_pwm[0] = 0;
-      pi1_ab_dir[0] = 0;
-
-      pi1_ab_pwm[1] = 0;
-      pi1_ab_dir[1] = 0;
-    }
-    else if ( inByte == "OL")
-    {
-      pi1_la_pwm[0] = 0;
-      pi1_la_dir[0] = 0;
-
-      pi1_la_pwm[1] = 0;
-      pi1_la_dir[1] = 0;
-    }
-
-
-    else if ( inByte == "IG")
-    {
-      ;
-    }
-    return;
+void engageMainBrakes() {
+  digitalWrite(mb1_pwm_pin, HIGH);
+  digitalWrite(mb2_pwm_pin, HIGH);
+  
+  digitalWrite(mb1_dir_pin, LOW);
+  digitalWrite(mb2_dir_pin, LOW);
 }
 
-void writePins(){
-  //PWM OR OUT STATES
-  mb_ored_pwm = pi1_mb_pwm[0] || pi1_mb_pwm[1];
-  mb_ored_dir = pi1_mb_dir[0] || pi1_mb_dir[1];
-
-  ab_ored_pwn = pi1_ab_pwm[0] || pi1_ab_pwm[1];
-  ab_ored_dir = pi1_ab_dir[0] || pi1_ab_dir[1];
-
-  la_ored_pwm = pi1_la_pwm[0] || pi1_la_pwm[1];
-  la_ored_dir = pi1_la_dir[0] || pi1_la_dir[1];
-
-
-  digitalWrite(mb1_dir_pin, mb_ored_dir);
-  digitalWrite(mb2_dir_pin, mb_ored_dir);
-
-  digitalWrite(mb1_pwm_pin, mb_ored_pwm);
-  digitalWrite(mb2_pwm_pin, mb_ored_pwm);
-
-  digitalWrite(ab1_dir_pin, ab_ored_dir);
-  digitalWrite(ab2_dir_pin, ab_ored_dir);
-
-  digitalWrite(ab1_pwm_pin, ab_ored_pwn);
-  digitalWrite(ab2_pwm_pin, ab_ored_pwn);
-
-  digitalWrite(la1_dir_pin, la_ored_dir);
-  digitalWrite(la2_dir_pin, la_ored_dir);
-
-  digitalWrite(la1_pwm_pin, la_ored_pwm);
-  digitalWrite(la2_pwm_pin, la_ored_pwm); 
-
+void releaseMainBrakes() {
+  digitalWrite(mb1_pwm_pin, HIGH);
+  digitalWrite(mb2_pwm_pin, HIGH);
+  
+  digitalWrite(mb1_dir_pin, HIGH);
+  digitalWrite(mb2_dir_pin, HIGH);
 }
 
-void loop() {
-  while (Serial.available() > 0) 
+void offMainBrakes() {
+  digitalWrite(mb1_pwm_pin, LOW);
+  digitalWrite(mb2_pwm_pin, LOW);
+  
+  digitalWrite(mb1_dir_pin, LOW);
+  digitalWrite(mb2_dir_pin, LOW);
+}
+
+void engageAuxiliaryBrakes() {
+  digitalWrite(ab1_pwm_pin, HIGH);
+  digitalWrite(ab2_pwm_pin, HIGH);
+  
+  digitalWrite(ab1_dir_pin, LOW);
+  digitalWrite(ab2_dir_pin, LOW);
+}
+
+void releaseAuxiliaryBrakes() {
+  digitalWrite(ab1_pwm_pin, HIGH);
+  digitalWrite(ab2_pwm_pin, HIGH);
+  
+  digitalWrite(ab1_dir_pin, HIGH);
+  digitalWrite(ab2_dir_pin, HIGH);
+}
+
+void offAuxiliaryBrakes() {
+  digitalWrite(ab1_pwm_pin, LOW);
+  digitalWrite(ab2_pwm_pin, LOW);
+  
+  digitalWrite(ab1_dir_pin, LOW);
+  digitalWrite(ab2_dir_pin, LOW);
+}
+
+void lowerLinearActuators() {
+  digitalWrite(la1_pwm_pin, HIGH);
+  digitalWrite(la2_pwm_pin, HIGH); 
+  
+  digitalWrite(la1_dir_pin, LOW);
+  digitalWrite(la2_dir_pin, LOW);
+}
+
+void raiseLinearActuators() {
+  digitalWrite(la1_pwm_pin, HIGH);
+  digitalWrite(la2_pwm_pin, HIGH); 
+  
+  digitalWrite(la1_dir_pin, HIGH);
+  digitalWrite(la2_dir_pin, HIGH);
+}
+
+void offLinearActuators() {
+  digitalWrite(la1_pwm_pin, LOW);
+  digitalWrite(la2_pwm_pin, LOW); 
+  
+  digitalWrite(la1_dir_pin, LOW);
+  digitalWrite(la2_dir_pin, LOW);
+}
+
+void sendAcknowledgement(String state) {
+  Serial.print(state);
+  Serial1.print(state);
+}
+
+boolean takeActionOnByte(String inByte){
+  if (inByte == "EM") {
+    engageMainBrakes();
+    sendAcknowledgement("EM");
+    
+  }else if (inByte == "EA") {
+    engageAuxiliaryBrakes();
+    sendAcknowledgement("EA");
+    
+  } else if (inByte == "RM") {
+    releaseMainBrakes();
+    sendAcknowledgement("RM");
+    
+  } else if (inByte == "RA") {
+    releaseAuxiliaryBrakes();
+    sendAcknowledgement("RA");
+    
+  } else if (inByte == "LL") {
+    lowerLinearActuators();
+    sendAcknowledgement("LL");
+    
+  } else if (inByte == "RL") {
+    raiseLinearActuators();
+    sendAcknowledgement("RL");
+    
+  } else if (inByte == "OM") {
+    offMainBrakes();
+    sendAcknowledgement("OM");
+    
+  } else if (inByte == "OA") {
+    offAuxiliaryBrakes();
+    sendAcknowledgement("OA");
+    
+  } else if (inByte == "OL") {
+    offLinearActuators();
+    sendAcknowledgement("OL");
+    
+  } else if (inByte == "IG") {
+    sendAcknowledgement("IG");
+  } else {
+    return false;
+  }
+
+  return true;
+}
+
+void loop() {  
+  String pi1InByte, pi2InByte;
+  if (Serial.available() > 0) 
   {
-    String inByte = Serial.readString();
-    readByte(inByte, 0);
+    pi1InByte = Serial.readString();
   }
-  writePins();
+  
 
-  while (Serial1.available() > 0) {
-    String inByte1 = Serial1.readString();
-    readByte(inByte1, 1);
+  if (Serial1.available() > 0) {
+    pi2InByte = Serial1.readString();
   }
-  writePins();
+
+  if (pi2InByte == "EM") {
+    engageMainBrakes();
+  } else if(pi2InByte == "EA") {
+    engageAuxiliaryBrakes();
+  }
+
+  boolean pi1Healthy = takeActionOnByte(pi1InByte);
+  boolean pi2Healthy = false;
+  if (pi1Healthy) {
+    ;
+  } else {
+    pi2Healthy = takeActionOnByte(pi2InByte);
+    if (!pi2Healthy) {
+      // send fault state response
+      sendAcknowledgement("FT");
+    }
+  }  
 }

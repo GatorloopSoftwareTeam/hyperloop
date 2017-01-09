@@ -1,38 +1,53 @@
 import time
 import serial
+import logging
+import constants
 
-OK = "IG"
-ENGAGE_BRAKES = "EM"
-ENGAGE_AUXILIARY = "EA"
-RELEASE_BRAKES = "RM"
-RELEASE_AUXILIARY = "RA"
-LOWER_LINEAR_ACTUATORS = "LL"
-RAISE_LINEAR_ACTUATORS = "RL"
-FORWARD = "FW"
-BACKWARD = "BW"
-OFF_BRAKES = "OM"
-OFF_AUXILIARY = "OA"
-OFF_LINEAR_ACTUATORS = "OL"
+END_OF_MESSAGE = "*"
+OK = constants.OK + END_OF_MESSAGE
+ENGAGE_MAIN_BRAKES = constants.ENGAGE_MAIN_BRAKES + END_OF_MESSAGE
+ENGAGE_AUXILIARY_BRAKES = constants.ENGAGE_AUXILIARY_BRAKES + END_OF_MESSAGE
+RELEASE_MAIN_BRAKES = constants.RELEASE_MAIN_BRAKES + END_OF_MESSAGE
+RELEASE_AUXILIARY_BRAKES = constants.RELEASE_AUXILIARY_BRAKES + END_OF_MESSAGE
+LOWER_LINEAR_ACTUATORS = constants.LOWER_LINEAR_ACTUATORS + END_OF_MESSAGE
+RAISE_LINEAR_ACTUATORS = constants.RAISE_LINEAR_ACTUATORS + END_OF_MESSAGE
+FORWARD = constants.FORWARD + END_OF_MESSAGE
+BACKWARD = constants.BACKWARD + END_OF_MESSAGE
+OFF_BRAKES = constants.OFF_BRAKES + END_OF_MESSAGE
+OFF_AUXILIARY = constants.OFF_AUXILIARY + END_OF_MESSAGE
+OFF_LINEAR_ACTUATORS = constants.OFF_LINEAR_ACTUATORS + END_OF_MESSAGE
+STOPPED = constants.STOPPED + END_OF_MESSAGE
+
+OK_RESPONSE = "IAMOK"
 
 
 class DriveController:
     def __init__(self):
         self.ser = serial.Serial(
-            port='/dev/ttyS0',
+            port='/dev/ttyAMA0',
             baudrate=9600,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS
         )
 
-    def send_ok(self):
+    def get_response(self):
+        return self.ser.readline()
+
+    def health_check(self):
         self.ser.write(OK)
+        response = self.get_response()
+        if response == OK_RESPONSE:
+            return True
+        else:
+            logging.error("RUOK request to drive_controller returned incorrect value: " + response)
+            return False
 
     def send_engage_main_brakes(self):
-        self.ser.write(ENGAGE_BRAKES)
+        self.ser.write(ENGAGE_MAIN_BRAKES)
 
     def send_release_main_brakes(self):
-        self.ser.write(RELEASE_BRAKES)
+        self.ser.write(RELEASE_MAIN_BRAKES)
 
     def send_lower_linear_actuators(self):
         self.ser.write(LOWER_LINEAR_ACTUATORS)
@@ -47,10 +62,10 @@ class DriveController:
         self.ser.write(BACKWARD)
 
     def send_engage_auxiliary_brakes(self):
-        self.ser.write(ENGAGE_AUXILIARY)
+        self.ser.write(ENGAGE_AUXILIARY_BRAKES)
 
     def send_release_auxiliary_brakes(self):
-        self.ser.write(RELEASE_AUXILIARY)
+        self.ser.write(RELEASE_AUXILIARY_BRAKES)
 
     def send_off_main_brakes(self):
         self.ser.write(OFF_BRAKES)
@@ -60,3 +75,6 @@ class DriveController:
 
     def send_off_linear_actuators(self):
         self.ser.write(OFF_LINEAR_ACTUATORS)
+
+    def send_stopped(self):
+        self.ser.write(STOPPED)

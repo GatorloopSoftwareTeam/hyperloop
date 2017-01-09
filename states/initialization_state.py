@@ -14,7 +14,7 @@ from sensors.init_bms import init_bms
 from sensors.init_temperature_sensors import init_temperature_sensors
 
 
-def start(pod_data, sql_wrapper):
+def start(pod_data, sql_wrapper, drive_controller):
     # INIT GPIO
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(True)
@@ -32,7 +32,11 @@ def start(pod_data, sql_wrapper):
     # start to recieve voltage from BMS Pi
     init_bms(pod_data, logging)
 
+    # make sure modprobe commands have been run to init temp sensors
     init_temperature_sensors()
+
+    if not drive_controller.health_check():
+        raise RuntimeError("Drive controller health check failed!")
 
     # TODO: figure out how these sensors get ordered each boot up
     # send ruok to optical sensor 1

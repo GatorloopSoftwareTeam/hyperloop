@@ -82,6 +82,8 @@ void offMainBrakes() {
 
   digitalWrite(mb1_dir_pin, LOW);
   digitalWrite(mb2_dir_pin, LOW);
+
+  delay(1000);
 }
 
 void engageAuxiliaryBrakes() {
@@ -106,6 +108,8 @@ void offAuxiliaryBrakes() {
 
   digitalWrite(ab1_dir_pin, LOW);
   digitalWrite(ab2_dir_pin, LOW);
+
+  delay(1000);
 }
 
 void lowerLinearActuators() {
@@ -130,6 +134,8 @@ void offLinearActuators() {
 
   digitalWrite(la1_dir_pin, LOW);
   digitalWrite(la2_dir_pin, LOW);
+
+  delay(1000);
 }
 
 void sendAcknowledgement(String state, int piNumber) {

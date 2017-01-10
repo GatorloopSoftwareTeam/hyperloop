@@ -38,7 +38,7 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial1.setTimeout(10);
-  Serial2.print("Serial for Pi2 initialized\n");
+  Serial1.print("Serial for Pi2 initialized\n");
 
   // Set pin directions
   pinMode(mb1_dir_pin, OUTPUT);
@@ -293,16 +293,10 @@ void loop() {
   if (Serial1.available() > 0) {
     pi2InByte = Serial1.readStringUntil('*');
   }
-
-  // Take action upon inputs, prioritizing braking singals.
-  // if (pi1InByte == "EM" || pi2InByte == "EM") {
-  //   takeActionOnByte("EM", 3);
-  //
-  // } else if (pi1InByte == "EA" || pi2InByte == "EA") {
-  //   takeActionOnByte("EA", 3);
-  //
-  // } else{
-  takeActionOnByte(pi1InByte, 1);
-  takeActionOnByte(pi2InByte, 2);
-  // }
+  if (pi1InByte.length() != 0){
+    takeActionOnByte(pi1InByte, 1);
+  }
+  if (pi2InByte.length() != 0){
+    takeActionOnByte(pi2InByte, 2);
+  }
 }

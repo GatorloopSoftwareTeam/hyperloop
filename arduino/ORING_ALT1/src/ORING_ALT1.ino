@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Servo.h>
 
 // Specify pins
 int mb1_dir_pin = 52;
@@ -23,22 +24,25 @@ boolean stopped_flag = false;
 long brake_release_time = 1.5 * 1000;
 long actuator_active_time = 1.5 * 1000;
 
+Servo myservo, myservo2;
+int pos = 90;
+
 void setup() {
 
   // Open serial communications and wait for port to open:
-  Serial2.begin(9600);
-  while (!Serial2) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-  Serial2.setTimeout(10);
-  Serial2.print("Serial for Pi1 initialized\n");
-
   Serial1.begin(9600);
   while (!Serial1) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial1.setTimeout(10);
-  Serial1.print("Serial for Pi2 initialized\n");
+  Serial1.print("Serial for Pi1 initialized\n");
+
+  Serial2.begin(9600);
+  while (!Serial2) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+  Serial2.setTimeout(10);
+  Serial2.print("Serial for Pi2 initialized\n");
 
   // Set pin directions
   pinMode(mb1_dir_pin, OUTPUT);
@@ -58,6 +62,10 @@ void setup() {
 
   // Clear stopped_flag
   stopped_flag = false;
+
+  // Init Servo
+  myservo.attach(9); // Servo to Pin9
+  myservo2.attach(10); // Servo to Pin9
 }
 
 void engageMainBrakes() {
@@ -140,14 +148,14 @@ void offLinearActuators() {
 
 void sendAcknowledgement(String state, int piNumber) {
   if (piNumber == 1){
-    Serial2.print(state);
+    Serial1.print(state);
 
   } else if (piNumber == 2) {
-    Serial1.print(state);
+    Serial2.print(state);
 
   } else {
-    Serial2.print(state);
     Serial1.print(state);
+    Serial2.print(state);
 
   }
 }
@@ -157,6 +165,20 @@ void sendStatus(int piNumber){
     sendAcknowledgement("Pod is Stopped\n", piNumber);
   } else{
     sendAcknowledgement("Pod is Running\n", piNumber);
+  }
+}
+
+void kill_switch(){
+  for (pos = 90; pos <= 300; pos += 10) { // goes from 90 degrees to 270 degrees
+    // in steps of 1 degree
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    myservo2.write(pos);
+    delay(30);                       // waits 15ms for the servo to reach the position
+  }
+  for (pos = 180; pos >= 90; pos -= 10) { // goes from 180 degrees to 0 degrees
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    myservo2.write(pos);
+    delay(30);                       // waits 15ms for the servo to reach the position
   }
 }
 
@@ -171,7 +193,13 @@ boolean takeActionOnByte(String inByte, int piNumber){
     engageAuxiliaryBrakes();
     sendAcknowledgement(inByte + "\n", piNumber);
 
-  } else if (inByte == "RM") {
+  } else if (inByte == "KILLPOD"){
+    for (int i = 0; i < 3; i+=1){
+        kill_switch();
+    }
+    sendAcknowledgement("KILLPOD\n", piNumber);
+
+  }else if (inByte == "RM") {
     // Release Main Brakes
     if (stopped_flag == true){
       offMainBrakes();
@@ -285,13 +313,13 @@ void loop() {
 
   // Read serial input if available. Each command should end with the
   // asterisk (*) to be able to distinguish them.
-  if (Serial2.available() > 0)
+  if (Serial1.available() > 0)
   {
-    pi1InByte = Serial2.readStringUntil('*');
+    pi1InByte = Serial1.readStringUntil('*');
   }
 
-  if (Serial1.available() > 0) {
-    pi2InByte = Serial1.readStringUntil('*');
+  if (Serial2.available() > 0) {
+    pi2InByte = Serial2.readStringUntil('*');
   }
   if (pi1InByte.length() != 0){
     takeActionOnByte(pi1InByte, 1);

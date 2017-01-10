@@ -71,10 +71,11 @@ STOPPED = "STOPPED"
 KILL_ALL = "KILLALL"
 RUNNING = "RUNNING"
 STATUS = "STATUS"
+KILL_POD = "KILLPOD"
 
-#Suspension codes
+# Suspension codes
 network_endinanness = '>'
-
+speed_and_acceleration_periodic_message = struct.pack(network_endinanness+'BBff', 0x20, 8, my_speed, my_acceleration);
 ping_message_req = struct.pack(network_endinanness+'BB', 0x10, 0);
 start_scu_message_req = struct.pack(network_endinanness+'BB', 0x11, 0);
 start_logging_message_req = struct.pack(network_endinanness+'BB', 0x12, 0);

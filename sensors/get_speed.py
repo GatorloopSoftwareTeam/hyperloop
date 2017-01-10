@@ -3,7 +3,7 @@ import datetime
 import time
 
 
-def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, accData, sql_wrapper, logging, q):
+def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, pod_data, accData, sql_wrapper, logging, q):
     wheel_dist = 0
     while True:
         # logging.debug("Getting speed from "+ser_str)

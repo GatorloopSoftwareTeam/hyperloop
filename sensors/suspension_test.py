@@ -147,15 +147,17 @@ while True:
     except ValueError:
         print "Please enter a selection 1-8"
         continue
-
+    
     request = str(get_request(int_selection))
-    print "Request: " + request
+    request = 0x10
+    print "Request: " + str(request)
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((TCP_IP, TCP_PORT))
-    s.send(request)
+    s.send("10")
     # 2 bytes for request id and payload length
-    data = s.recv(2 + get_response_size_in_bytes(int_selection))
+    #data = s.recv(2 + int(get_response_size_in_bytes(int_selection)))
+    data = s.recv(1024)
     s.close()
 
     print "received data:", data

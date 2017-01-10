@@ -7,6 +7,14 @@ from dto.acc_data import AccelerationData
 class PodData(object):
 
     def __init__(self):
+        ##Spacex Values
+        self.team_id=1
+        self.status=2
+        self.current=0
+        self.batt_temp=0
+        self.pod_temp=0
+        
+
         self._state = 1
         self.speed = 0
         self.acceleration = AccelerationData()

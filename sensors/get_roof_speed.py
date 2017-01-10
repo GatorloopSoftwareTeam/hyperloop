@@ -3,7 +3,7 @@ import datetime
 import time
 
 
-def getRoofSpeed(ser1, ser_str, num_stripes_brake, num_stripes_panic, accData, sql_wrapper, logging, q):
+def getRoofSpeed(ser1, ser_str, num_stripes_brake, num_stripes_panic, pod_data, accData, sql_wrapper, logging, q):
     x = 1
     total_stripes = 0
     stripe_diff = datetime.timedelta(microseconds=0)
@@ -23,7 +23,7 @@ def getRoofSpeed(ser1, ser_str, num_stripes_brake, num_stripes_panic, accData, s
             logging.debug("bytes to read was " + str(bytesToRead))
             total_stripes += 1
             logging.debug("total stripes dist is now " + str(total_stripes))
-
+            pod_data.num_stripes_passed = total_stripes
             last_stripe_diff = stripe_diff
             last_stripe_time = stripe_time
             stripe_time = datetime.datetime.now()

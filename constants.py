@@ -1,5 +1,5 @@
 import struct
-
+import sys
 
 # States
 STATE_FAULT = 0  # will cause tube run to abort
@@ -28,7 +28,7 @@ WHEEL_2_DIST = 0
 TOTAL_STRIPES = 0
 NUM_STRIPES_BRAKE = 3
 NUM_STRIPES_PANIC = 70
-DIST_BRAKE = 40
+DIST_BRAKE = 40000000
 READ_ROOF = 1
 READ_WHEEL = 1
 READ_ACC = 1
@@ -83,4 +83,4 @@ stop_scu_message_req = struct.pack(network_endinanness+'BB', 0x14, 0);
 available_space_message_req = struct.pack(network_endinanness+'BB', 0x15, 0); # Not implemented yet
 clear_logs_message_req = struct.pack(network_endinanness+'BB', 0x16, 0); # Not implemented yet
 
-heartbeat_message_reply = struct.pack(network_endinanness+'BBH', 0x57, 8, 0);
+heartbeat_message_reply = struct.pack(network_endinanness+'BBH', 0x57, 2, 0);

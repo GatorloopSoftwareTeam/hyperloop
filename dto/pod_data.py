@@ -21,6 +21,8 @@ class PodData(object):
         self.num_stripes_passed = 0
         self.wheel_1_dist = 0
         self.wheel_2_dist = 0
+        self.wheel_1_speed = 0
+        self.wheel_1_speed = 0
         self.v_val = 0
         self.vs_val = 0
         self.main_battery_1_temp = 0
@@ -29,7 +31,9 @@ class PodData(object):
         self.aux_battery_1_temp = 0
         self.aux_battery_2_temp = 0
         self.aux_battery_3_temp = 0
+        self.pod_temp = 0
 
+        self.sus_inited=False
         self.scu_sus_started=False
         self.scu_log_started=False
 

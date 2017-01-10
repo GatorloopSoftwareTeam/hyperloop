@@ -30,7 +30,7 @@ def start(pod_data, sql_wrapper, drive_controller):
     pod_data.state = constants.STATE_IDLE
 
     # start to recieve voltage from BMS Pi
-    init_bms(pod_data, logging)
+    #init_bms(pod_data, logging)
 
     # make sure modprobe commands have been run to init temp sensors
     init_temperature_sensors()

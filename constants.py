@@ -28,7 +28,7 @@ WHEEL_2_DIST = 0
 TOTAL_STRIPES = 0
 NUM_STRIPES_BRAKE = 3
 NUM_STRIPES_PANIC = 70
-DIST_BRAKE = 40000000
+DIST_BRAKE = 400
 READ_ROOF = 1
 READ_WHEEL = 1
 READ_ACC = 1
@@ -37,7 +37,7 @@ COAST_DETECT = 1
 """
 Minimum Y direction G force that we consider the pod to be in the push state
 """
-MIN_PUSH_ACCELERATION = 1.0
+MIN_PUSH_ACCELERATION = 0.2
 
 """
 Total time that the pusher is active (in seconds)

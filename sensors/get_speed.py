@@ -13,11 +13,11 @@ def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, pod_data, accData, 
             # TODO can probably take this out
             time.sleep(0.5)
         else:
-            response = ser1.readline(bytesToRead)  ## MIGHT need to swap in a readline
+            response = ser1.readline()  ## MIGHT need to swap in a readline
             logging.debug(ser_str + " returned " + response)
             logging.debug("bytes to read was " + str(bytesToRead))
             wheel_dist += wheel_circumference
-            logging.debug(ser_str + " dist is now " + str(wheel_dist))
+            logging.debug(ser_str + " dist is now " + str(wheel_dist)) 
             sql_wrapper.execute("INSERT INTO " + ser_str + "speed VALUES (%s,%s)", (datetime.datetime.now(), response))
             # try:
             #     db1.execute("INSERT INTO " + ser_str + "speed VALUES (%s,%s)", (datetime.datetime.now(), response))

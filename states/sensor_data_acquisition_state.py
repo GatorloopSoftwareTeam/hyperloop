@@ -13,10 +13,14 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper):
     sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "SENSOR DATA ACQUISITION STARTED"))
     thread.start_new_thread(getBMS, (pod_data, sql_wrapper, logging))
     thread.start_new_thread(getAcc, (pod_data, sql_wrapper, logging))
-    thread.start_new_thread(get_battery_temperature, pod_data)
+    thread.start_new_thread(get_battery_temperature, (pod_data,))
     #Turn suspension on
     while pod_data.scu_sus_started==False:
+        logging.debug("Sending Suspension Start")
     	suspension_tcp_socket.send(constants.start_scu_message_req)
-    while pod_data.scu_log_started=False:
+        time.sleep(.5)
+    while pod_data.scu_log_started==False:
+        logging.debug("Sending Logging Start")
     	suspension_tcp_socket.send(constants.start_logging_message_req)
+        time.sleep(.5)
     time.sleep(5)

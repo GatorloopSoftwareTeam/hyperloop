@@ -36,11 +36,11 @@ def start(pod_data, sql_wrapper, drive_controller):
     init_temperature_sensors()
 
     # send a ping to the suspension unit
-    suspension_tcp_socket = init_suspension()
+    suspension_tcp_socket = init_suspension(pod_data, logging)
 
 
-    if not drive_controller.health_check():
-        raise RuntimeError("Drive controller health check failed!")
+    #if not drive_controller.health_check():
+    #    raise RuntimeError("Drive controller health check failed!")
 
     # TODO: figure out how these sensors get ordered each boot up
     # send ruok to optical sensor 1

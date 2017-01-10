@@ -42,7 +42,7 @@ def recieve_suspension_tcp(tcp_sock, pod_data):
 def init_suspension(pod_data, logging):
 	logging.debug("About to init suspension")
 
-	network_endinanness='>'
+	
 
 	port=3000
 	ip='192.168.0.10'

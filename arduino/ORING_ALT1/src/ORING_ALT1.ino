@@ -26,19 +26,19 @@ long actuator_active_time = 1.5 * 1000;
 void setup() {
 
   // Open serial communications and wait for port to open:
-  Serial.begin(9600);
-  while (!Serial) {
+  Serial2.begin(9600);
+  while (!Serial2) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-  Serial.setTimeout(10);
-  Serial.print("Serial for Pi1 initialized\n");
+  Serial2.setTimeout(10);
+  Serial2.print("Serial for Pi1 initialized\n");
 
   Serial1.begin(9600);
   while (!Serial1) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial1.setTimeout(10);
-  Serial.print("Serial for Pi2 initialized\n");
+  Serial2.print("Serial for Pi2 initialized\n");
 
   // Set pin directions
   pinMode(mb1_dir_pin, OUTPUT);
@@ -140,13 +140,13 @@ void offLinearActuators() {
 
 void sendAcknowledgement(String state, int piNumber) {
   if (piNumber == 1){
-    Serial.print(state);
+    Serial2.print(state);
 
   } else if (piNumber == 2) {
     Serial1.print(state);
 
   } else {
-    Serial.print(state);
+    Serial2.print(state);
     Serial1.print(state);
 
   }
@@ -285,9 +285,9 @@ void loop() {
 
   // Read serial input if available. Each command should end with the
   // asterisk (*) to be able to distinguish them.
-  if (Serial.available() > 0)
+  if (Serial2.available() > 0)
   {
-    pi1InByte = Serial.readStringUntil('*');
+    pi1InByte = Serial2.readStringUntil('*');
   }
 
   if (Serial1.available() > 0) {

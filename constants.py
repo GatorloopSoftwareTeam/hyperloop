@@ -1,3 +1,6 @@
+import struct
+
+
 # States
 STATE_FAULT = 0  # will cause tube run to abort
 STATE_IDLE = 1  # pod is on, but not ready to be pushed
@@ -68,3 +71,15 @@ STOPPED = "STOPPED"
 KILL_ALL = "KILLALL"
 RUNNING = "RUNNING"
 STATUS = "STATUS"
+
+#Suspension codes
+speed_and_acceleration_periodic_message = struct.pack(network_endinanness+'BBff', 0x20, 8, my_speed, my_acceleration);
+ping_message_req = struct.pack(network_endinanness+'BB', 0x10, 0);
+start_scu_message_req = struct.pack(network_endinanness+'BB', 0x11, 0);
+start_logging_message_req = struct.pack(network_endinanness+'BB', 0x12, 0);
+stop_logging_message_req = struct.pack(network_endinanness+'BB', 0x13, 0);
+stop_scu_message_req = struct.pack(network_endinanness+'BB', 0x14, 0);
+available_space_message_req = struct.pack(network_endinanness+'BB', 0x15, 0); # Not implemented yet
+clear_logs_message_req = struct.pack(network_endinanness+'BB', 0x16, 0); # Not implemented yet
+
+heartbeat_message_reply = struct.pack(network_endinanness+'BBH', 0x57, 8, 0);

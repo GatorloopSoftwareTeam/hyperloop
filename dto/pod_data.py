@@ -30,6 +30,9 @@ class PodData(object):
         self.aux_battery_2_temp = 0
         self.aux_battery_3_temp = 0
 
+        self.scu_sus_started=False
+        self.scu_log_started=False
+
     @property
     def state(self):
         return self._state

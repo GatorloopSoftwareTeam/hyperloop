@@ -46,7 +46,7 @@ thread.start_new_thread(send_pod_data_in_interval, (pod_data,))
 drive_controller = DriveController()
 
 try:
-    inited_tty = states.initialization_state.start(pod_data, sql_wrapper, drive_controller)
+    inited_tty, suspension_tcp_socket = states.initialization_state.start(pod_data, sql_wrapper, drive_controller)
 except MySQLdb.OperationalError, e:
     logging.error("Initialization state failed because of mysql operational error: " + str(e) + ". Aborting run...")
     enter_fault_state()
@@ -55,7 +55,7 @@ except RuntimeError, e:
     enter_fault_state()
 
 states.idle_state.start(pod_data, sql_wrapper)
-states.sensor_data_acquisition_state.start(pod_data, sql_wrapper)
+states.sensor_data_acquisition_state.start(pod_data, suspension_tcp_socket, sql_wrapper)
 states.ready_state.start(pod_data, sql_wrapper)
 
 try:

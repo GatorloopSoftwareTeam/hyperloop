@@ -12,7 +12,7 @@ from sensors.get_acc import getAcc
 from sensors.init_tty_usb_x import init_tty_usb_x
 from sensors.init_bms import init_bms
 from sensors.init_temperature_sensors import init_temperature_sensors
-
+from sensors.init_suspension import init_suspension
 
 def start(pod_data, sql_wrapper, drive_controller):
     # INIT GPIO
@@ -35,6 +35,10 @@ def start(pod_data, sql_wrapper, drive_controller):
     # make sure modprobe commands have been run to init temp sensors
     init_temperature_sensors()
 
+    # send a ping to the suspension unit
+    suspension_tcp_socket = init_suspension()
+
+
     if not drive_controller.health_check():
         raise RuntimeError("Drive controller health check failed!")
 
@@ -47,4 +51,4 @@ def start(pod_data, sql_wrapper, drive_controller):
         # pass in list of inited_tty so we can add to it after we initialize
         inited_tty = init_tty_usb_x(i, inited_tty, logging)
 
-    return inited_tty
+    return inited_tty, suspension_tcp_socket

@@ -1,3 +1,4 @@
 .idea
 *.pyc
 *.ino.cpp
+.DS_Store

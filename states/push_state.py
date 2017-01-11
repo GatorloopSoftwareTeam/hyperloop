@@ -22,10 +22,10 @@ def start(pod_data, inited_tty, sql_wrapper):
     if constants.READ_WHEEL == 1:
         # start all speed getting threads
         wheel1 = thread.start_new_thread(getSpeed, (
-            inited_tty["wheel1"], "wheel1", constants.WHEEL_CIRCUMFERENCE, constants.DIST_BRAKE, pod_data.acceleration,
+            inited_tty["wheel1"], "wheel1", constants.WHEEL_CIRCUMFERENCE, constants.DIST_BRAKE, pod_data,pod_data.acceleration,
             sql_wrapper, logging, q))
         wheel2 = thread.start_new_thread(getSpeed, (
-            inited_tty["wheel2"], "wheel2", constants.WHEEL_CIRCUMFERENCE, constants.DIST_BRAKE, pod_data.acceleration,
+            inited_tty["wheel2"], "wheel2", constants.WHEEL_CIRCUMFERENCE, constants.DIST_BRAKE, pod_data,pod_data.acceleration,
             sql_wrapper, logging, q))
 
     if constants.READ_ROOF == 1:
@@ -37,7 +37,7 @@ def start(pod_data, inited_tty, sql_wrapper):
     q.get()
 
     # do not brake if we are still being pushed
-    while datetime.datetime.now() - push_start_time > constants.TOTAL_PUSH_TIME:
+    while (datetime.datetime.now() - push_start_time).total_seconds() > constants.TOTAL_PUSH_TIME:
         continue
 
     logging.debug("Got a brake command")

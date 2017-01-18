@@ -40,22 +40,13 @@ def getRoofSpeed(ser1, ser_str, num_stripes_brake, num_stripes_panic, pod_data, 
                 logging.debug("PANIC")
                 # TODO: Brake?
             sql_wrapper.execute("""INSERT INTO roofspeed VALUES (%s,%s)""", (datetime.datetime.now(), response))
-            # try:
-            #     db1 = conn.cursor()
-            #     db1.execute("""INSERT INTO roofspeed VALUES (%s,%s)""", (datetime.datetime.now(), response))
-            #     conn.commit()
-            #     db1.close()
-            # except Exception as e:
-            #
-            #     logging.debug("error writing to db")
-            #     logging.debug("e is " + str(type(e)))
-            #     print e
-            #     conn.rollback()
+
         if total_stripes > num_stripes_brake:
-            if accData.y_g > -0.1:
-                logging.debug("Passed the distance on " + ser_str + ".  Lets brake")
-                q.put("brake")
-            else:
-                logging.debug("Passed the braking distance but Y G's was " + str(
-                    accData.y_g) + " so we are still accelerating probably")
+            q.put("brake")
+            # if accData.y_g > -0.1:
+            #     logging.debug("Passed the distance on " + ser_str + ".  Lets brake")
+            #     q.put("brake")
+            # else:
+            #     logging.debug("Passed the braking distance but Y G's was " + str(
+            #         accData.y_g) + " so we are still accelerating probably")
                 # return 1

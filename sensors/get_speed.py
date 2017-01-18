@@ -30,14 +30,16 @@ def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, pod_data, accData, 
             #     conn.rollback()
                 # if we have gone the distance
         if wheel_dist > dist_brake:
+            # push state checks to make sure that we've been going long enough that we're not still being pushed
+            q.put("brake")
             # if the acc detects we aren't being pushed
-            if accData.y_g > -0.1:
-                logging.debug("Passed the distance on " + ser_str + ".  Lets brake")
-                logging.debug("Y G's detected as " + str(accData.y_g))
-                q.put("brake")
-            else:
-                logging.debug("Passed the braking distance but Y G's was " + str(
-                    accData.y_g) + " so we are still accelerating probably")
+            # if accData.y_g > -0.1:
+            #     logging.debug("Passed the distance on " + ser_str + ".  Lets brake")
+            #     logging.debug("Y G's detected as " + str(accData.y_g))
+            #     q.put("brake")
+            # else:
+            #     logging.debug("Passed the braking distance but Y G's was " + str(
+            #         accData.y_g) + " so we are still accelerating probably")
 
 
                 # return 1

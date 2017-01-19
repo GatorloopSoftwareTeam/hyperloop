@@ -18,6 +18,7 @@ OFF_AUXILIARY = constants.OFF_AUXILIARY + END_OF_MESSAGE
 OFF_LINEAR_ACTUATORS = constants.OFF_LINEAR_ACTUATORS + END_OF_MESSAGE
 STOPPED = constants.STOPPED + END_OF_MESSAGE
 KILL_ALL = constants.KILL_ALL + END_OF_MESSAGE
+KILL_POD = constants.KILL_POD + END_OF_MESSAGE
 RUNNING = constants.RUNNING + END_OF_MESSAGE
 STATUS = constants.STATUS + END_OF_MESSAGE
 
@@ -87,6 +88,12 @@ class DriveController:
 
     def send_running(self):
         self.ser.write(RUNNING)
+
+    def send_command(self, command):
+        self.ser.write(command)
+
+    def send_kill_pod(self):
+        self.ser.write(KILL_POD)
 
     def get_status(self):
         self.ser.write(STATUS)

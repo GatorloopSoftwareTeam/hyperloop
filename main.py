@@ -1,11 +1,10 @@
 import logging
 import thread
 import time
-import datetime
 import MySQLdb
 import sys
 import states.initialization_state
-import states.check_systems_state
+import states.demo_motors_state
 import states.push_state
 import states.brake_state
 import states.fault_state
@@ -70,51 +69,4 @@ states.brake_2_state.start(pod_data, drive_controller)
 states.wait_for_pod_to_stop_state.start(pod_data, sql_wrapper, drive_controller)
 states.drive_state.start(sql_wrapper, drive_controller)
 
-# DRIVE(conn)
 
-
-# def DRIVE(conn):
-#     GPIO.output(17, 0)
-#     GPIO.output(27, 0)
-#     import wiringpi
-#     wiringpi.wiringPiSetupGpio()
-#     # GPIO 1 is hardware PWM, Mode 2 is PWM
-#     wiringpi.pinMode(1, 2)
-#     wiringpi.pwmWrite(1, 512)
-
-# STATE: COAST
-# while True:
-# set database to coast
-# update speed from R wheel
-# update speed from L wheel
-# update speed from roof
-# count readings(stripes)
-# update bms
-# update acc
-# if passed X stripes
-# MOVE TO BRAKE
-
-# STATE: BRAKE
-# while True:
-# set database to brake
-# engage brake 1
-# update speed from R wheel
-# update speed from L wheel
-# update speed from roof
-# count readings(stripes)
-# update bms
-# update acc
-# if acceleration < expected
-# engage brake 2
-
-# STATE: EXIT
-# while True:
-# set database to exit
-# update speed from R wheel
-# update speed from L wheel
-# update speed from roof
-# count readings(stripes)
-# update bms
-# update acc
-# if user input
-# engage drive

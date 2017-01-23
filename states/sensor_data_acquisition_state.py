@@ -12,7 +12,7 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, thread):
 
     thread.start_new_thread(sensors.get_acc.getAcc, (pod_data, sql_wrapper, logging))
 
-    #Turn suspension on
+    # Turn suspension on
     while not pod_data.scu_sus_started:
         logging.debug("Sending Suspension Start")
         suspension_tcp_socket.send(constants.start_scu_message_req)
@@ -23,7 +23,7 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, thread):
         time.sleep(.5)
     thread.start_new_thread(send_suspension_telemetry, (pod_data, logging))
     time.sleep(5)
-    if(pod_data.state == 0):
+    if pod_data.state == constants.STATE_FAULT:
         while True:
             logging.debug("Can't enter ready state, in fault state")
-            time.sleep(5)
+            time.sleep(2)

@@ -29,10 +29,10 @@ def _read_temp(device_file, pod_data, sql_wrapper, sensor_number):
             temp_string = lines[1][equals_pos + 2:]
             formatted_temp_string = float(temp_string) / 1000.0
 
-            #check for a bad temperature
+            # check for a bad temperature
             if formatted_temp_string > constants.BATTERY_MAX_TEMP:
-                #bad temp, enter fault state
-                pod_data.state = 0
+                # bad temp, enter fault state
+                pod_data.state = constants.STATE_FAULT
 
             if sensor_number == 1:
                 pod_data.main_battery_1_temp = formatted_temp_string

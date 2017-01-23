@@ -8,14 +8,14 @@ class PodData(object):
 
     def __init__(self):
         ##Spacex Values
-        self.team_id=1
-        self.status=2
+        self.team_id=12
+
         self.current=0
         self.batt_temp=0
         self.pod_temp=0
 
-        self._state = 1
-        self.speed = 0
+        self.state = 1
+        # self.speed = 0
         self.acceleration = AccelerationData()
         self.num_stripes_passed = 0
         self.wheel_1_dist = 0
@@ -35,16 +35,6 @@ class PodData(object):
         self.sus_inited=False
         self.scu_sus_started=False
         self.scu_log_started=False
-
-    @property
-    def state(self):
-        return self._state
-
-    @state.setter
-    def state(self, state):
-        if self._state != state:
-            logging.debug("State changed from " + str(self._state) + " to " + str(state))
-        self._state = state
 
     # TODO: what do we want to send to spacex?
     def to_str(self):

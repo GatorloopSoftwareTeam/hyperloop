@@ -13,7 +13,7 @@ def start(pod_data, inited_tty, sql_wrapper):
     # set database to push
     pod_data.state = constants.STATE_PUSHING
     logging.debug("Now in PUSH state")
-    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "PUSH STARTED"))
+    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "PUSH STARTED"))
 
     # update speed from R wheel
     logging.debug("read_wheel = " + str(constants.READ_WHEEL))

@@ -23,6 +23,7 @@ MYSQL_HOST = "localhost"
 MYSQL_USER = "root"
 MYSQL_PASSWORD = "password"
 MYSQL_DB = "test"
+TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # Sensor related
 BMS_PORT = 2001

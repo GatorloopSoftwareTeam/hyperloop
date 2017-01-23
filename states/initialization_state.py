@@ -28,7 +28,7 @@ def start(pod_data, sql_wrapper, drive_controller):
     GPIO.setup(27, GPIO.OUT)
 
     # save initialization state to database
-    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "INITIALIZATION STARTED"))
+    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "INITIALIZATION STARTED"))
 
     logging.debug("set pod state to 1 (idle)")
     pod_data.state = constants.STATE_IDLE

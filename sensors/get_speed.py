@@ -1,6 +1,7 @@
 import MySQLdb
 import datetime
 import time
+import constants
 
 
 def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, pod_data, accData, sql_wrapper, logging, q):
@@ -18,7 +19,7 @@ def getSpeed(ser1, ser_str, wheel_circumference, dist_brake, pod_data, accData, 
             logging.debug("bytes to read was " + str(bytesToRead))
             wheel_dist += wheel_circumference
             logging.debug(ser_str + " dist is now " + str(wheel_dist)) 
-            sql_wrapper.execute("INSERT INTO " + ser_str + "speed VALUES (%s,%s)", (datetime.datetime.now(), response))
+            sql_wrapper.execute("INSERT INTO " + ser_str + "speed VALUES (%s,%s)", (datetime.datetime.now().strftime(constants.TIME_FORMAT), response))
             # try:
             #     db1.execute("INSERT INTO " + ser_str + "speed VALUES (%s,%s)", (datetime.datetime.now(), response))
             #     conn.commit()

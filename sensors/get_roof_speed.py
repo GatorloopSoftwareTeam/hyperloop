@@ -1,6 +1,7 @@
 import MySQLdb
 import datetime
 import time
+import constants
 
 
 def getRoofSpeed(ser1, ser_str, num_stripes_brake, num_stripes_panic, pod_data, accData, sql_wrapper, logging, q):
@@ -39,7 +40,7 @@ def getRoofSpeed(ser1, ser_str, num_stripes_brake, num_stripes_panic, pod_data, 
             if total_stripes > num_stripes_panic:
                 logging.debug("PANIC")
                 # TODO: Brake?
-            sql_wrapper.execute("""INSERT INTO roofspeed VALUES (%s,%s)""", (datetime.datetime.now(), response))
+            sql_wrapper.execute("""INSERT INTO roofspeed VALUES (%s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), response))
 
         if total_stripes > num_stripes_brake:
             q.put("brake")

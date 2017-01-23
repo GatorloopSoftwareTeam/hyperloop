@@ -20,7 +20,7 @@ def request_input(pod_data, sql_wrapper):
 
 
 def start(pod_data, sql_wrapper):
-    sql_wrapper.execute("""INSERT INTO states VALUES (%s,%s)""", (datetime.datetime.now(), "IDLE STATE STARTED"))
+    sql_wrapper.execute("""INSERT INTO states VALUES (%s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "IDLE STATE STARTED"))
 
     while not request_input(pod_data, sql_wrapper):
         pass

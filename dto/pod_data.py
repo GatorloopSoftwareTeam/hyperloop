@@ -13,7 +13,6 @@ class PodData(object):
         self.current=0
         self.batt_temp=0
         self.pod_temp=0
-        
 
         self._state = 1
         self.speed = 0
@@ -22,7 +21,7 @@ class PodData(object):
         self.wheel_1_dist = 0
         self.wheel_2_dist = 0
         self.wheel_1_speed = 0
-        self.wheel_1_speed = 0
+        self.wheel_2_speed = 0
         self.v_val = 0
         self.vs_val = 0
         self.main_battery_1_temp = 0

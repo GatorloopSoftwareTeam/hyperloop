@@ -3,8 +3,6 @@ import constants
 import datetime
 import MySQLdb
 import time
-import RPi.GPIO as GPIO
-from lib.MotorDriver import MotorDriver
 
 
 def start(pod_data, sql_wrapper, drive_controller):

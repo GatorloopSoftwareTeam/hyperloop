@@ -5,6 +5,8 @@ import time
 import socket
 
 import RPi.GPIO as GPIO
+import emergency_brake_listener
+import kill_power_listener
 
 import constants
 from sensors.get_bms import getBMS
@@ -13,6 +15,7 @@ from sensors.init_tty_usb_x import init_tty_usb_x
 from sensors.init_bms import init_bms
 from sensors.init_temperature_sensors import init_temperature_sensors
 from sensors.init_suspension import init_suspension
+
 
 def start(pod_data, sql_wrapper, drive_controller):
     # INIT GPIO
@@ -38,6 +41,9 @@ def start(pod_data, sql_wrapper, drive_controller):
     # send a ping to the suspension unit
     suspension_tcp_socket = init_suspension(pod_data, logging)
 
+    # start listeners to catch emergency brake or kill power signals
+    thread.start_new_thread(emergency_brake_listener.start_listener(), ())
+    thread.start_new_thread(kill_power_listener.start_listener(), ())
 
     #if not drive_controller.health_check():
     #    raise RuntimeError("Drive controller health check failed!")

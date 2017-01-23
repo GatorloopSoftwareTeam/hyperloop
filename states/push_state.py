@@ -2,6 +2,7 @@ import Queue
 import datetime
 import logging
 import thread
+import MySQLdb
 
 import constants
 from sensors.get_roof_speed import getRoofSpeed
@@ -13,7 +14,11 @@ def start(pod_data, inited_tty, sql_wrapper):
     # set database to push
     pod_data.state = constants.STATE_PUSHING
     logging.debug("Now in PUSH state")
-    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "PUSH STARTED"))
+    try:
+        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "PUSH STARTED"))
+    except MySQLdb.Error, e:
+        logging.error("MySQL error in push state: " + str(e))
+        pass
 
     # update speed from R wheel
     logging.debug("read_wheel = " + str(constants.READ_WHEEL))

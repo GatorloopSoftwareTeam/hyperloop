@@ -35,6 +35,7 @@ class PodData(object):
         self.sus_inited=False
         self.scu_sus_started=False
         self.scu_log_started=False
+        self.stopped = False
 
     @property
     def state(self):

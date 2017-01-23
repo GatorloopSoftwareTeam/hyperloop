@@ -24,18 +24,18 @@ def getRoofSpeed(ser1, ser_str, num_stripes_brake, num_stripes_panic, pod_data, 
             total_stripes += 1
             logging.debug("total stripes dist is now " + str(total_stripes))
             pod_data.num_stripes_passed = total_stripes
-            last_stripe_diff = stripe_diff
-            last_stripe_time = stripe_time
-            stripe_time = datetime.datetime.now()
-            stripe_diff = stripe_time - last_stripe_time
-            logging.debug("last_stripe_time was")
-            logging.debug(last_stripe_time)
+            #last_stripe_diff = stripe_diff
+            #last_stripe_time = stripe_time
+            #stripe_time = datetime.datetime.now()
+            #stripe_diff = stripe_time - last_stripe_time
+            #logging.debug("last_stripe_time was")
+            #logging.debug(last_stripe_time)
 
             ##VERY IMPORTANT
             # this multiplier is the delta for close strips vs normal strips based on time
-            if (3 * stripe_diff < last_stripe_diff):
-                logging.debug("CLOSE STRIPS DETECTED")
-                q.put("brake")
+            #if (3 * stripe_diff < last_stripe_diff):
+            #    logging.debug("CLOSE STRIPS DETECTED")
+            #    q.put("brake")
             if total_stripes > num_stripes_panic:
                 logging.debug("PANIC")
                 # TODO: Brake?

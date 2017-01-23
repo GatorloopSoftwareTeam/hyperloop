@@ -9,12 +9,13 @@ import emergency_brake_listener
 import kill_power_listener
 
 import constants
-from sensors.get_bms import getBMS
-from sensors.get_acc import getAcc
 from sensors.init_tty_usb_x import init_tty_usb_x
 from sensors.init_bms import init_bms
-from sensors.init_temperature_sensors import init_temperature_sensors
+from sensors.get_bms import get_bms
+from sensors.init_battery_temperature import init_battery_temperature
+from sensors.get_battery_temperature import get_battery_temperature
 from sensors.init_suspension import init_suspension
+from sensors.init_acc import init_acc
 
 
 def start(pod_data, sql_wrapper, drive_controller):
@@ -32,11 +33,16 @@ def start(pod_data, sql_wrapper, drive_controller):
     logging.debug("set pod state to 1 (idle)")
     pod_data.state = constants.STATE_IDLE
 
+    # test the accelerometer
+    init_acc(pod_data, sql_wrapper, logging)
+
     # start to recieve voltage from BMS Pi
-    #init_bms(pod_data, logging)
+    init_bms(pod_data, sql_wrapper, logging)
+    thread.start_new_thread(get_bms, (pod_data, sql_wrapper, logging))
 
     # make sure modprobe commands have been run to init temp sensors
-    init_temperature_sensors()
+    init_battery_temperature(pod_data, logging)
+    thread.start_new_thread(get_battery_temperature, (pod_data, sql_wrapper, logging))
 
     # send a ping to the suspension unit
     suspension_tcp_socket = init_suspension(pod_data, logging)

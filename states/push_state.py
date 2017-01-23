@@ -10,7 +10,7 @@ from sensors.get_speed import getSpeed
 
 
 def start(pod_data, inited_tty, sql_wrapper):
-    push_start_time = datetime.datetime.now()
+    pod_data.push_start_time = datetime.datetime.now()
     # set database to push
     pod_data.state = constants.STATE_PUSHING
     logging.debug("Now in PUSH state")
@@ -42,7 +42,7 @@ def start(pod_data, inited_tty, sql_wrapper):
     q.get()
 
     # do not brake if we are still being pushed
-    while (datetime.datetime.now() - push_start_time).total_seconds() > constants.TOTAL_PUSH_TIME:
+    while (datetime.datetime.now() - pod_data.push_start_time).total_seconds() > constants.TOTAL_PUSH_TIME:
         continue
 
     logging.debug("Got a brake command")

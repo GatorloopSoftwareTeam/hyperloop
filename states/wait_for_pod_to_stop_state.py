@@ -39,3 +39,6 @@ def start(pod_data, sql_wrapper, drive_controller):
     while drive_controller.get_response() != constants.STOPPED:
         drive_controller.send_stopped()
         time.sleep(.1)
+
+    pod_data.stopped = True
+

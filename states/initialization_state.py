@@ -48,7 +48,7 @@ def start(pod_data, sql_wrapper, drive_controller):
     suspension_tcp_socket = init_suspension(pod_data, logging)
 
     # start listeners to catch emergency brake or kill power signals
-    thread.start_new_thread(emergency_brake_listener.start_listener(), ())
+    thread.start_new_thread(emergency_brake_listener.start_listener(), (pod_data,))
     thread.start_new_thread(kill_power_listener.start_listener(), ())
 
     #if not drive_controller.health_check():

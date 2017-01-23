@@ -36,6 +36,8 @@ class PodData(object):
         self.scu_sus_started=False
         self.scu_log_started=False
         self.stopped = False
+        self.push_start_time = 0
+        self._state = ''
 
     @property
     def state(self):
@@ -43,7 +45,7 @@ class PodData(object):
 
     @state.setter
     def state(self, state):
-        if self._state != constants.FAULT:
+        if self._state != constants.STATE_FAULT:
             self._state = state
         else:
             logging.debug("Error: trying to change state from a fault state is not allowed")

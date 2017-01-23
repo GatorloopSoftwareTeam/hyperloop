@@ -24,4 +24,4 @@ def get_bms(pod_data, sql_wrapper, logging):
             if bms_vs_val < constants.LOW_BATTERY:
                 pod_data.state = constants.STATE_FAULT
 
-        sql_wrapper.execute("INSERT INTO bms VALUES (%s,%s,%s)", (datetime.datetime.now(), bms_v_val, bms_vs_val))
+        sql_wrapper.execute("INSERT INTO bms VALUES (%s,%s,%s)", (datetime.datetime.now().strftime(constants.TIME_FORMAT), bms_v_val, bms_vs_val))

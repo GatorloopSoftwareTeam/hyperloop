@@ -14,7 +14,7 @@ def _check_pod_is_stopped(pod_data):
 
 def start(pod_data, sql_wrapper, drive_controller):
     try:
-        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "WAITING FOR POD TO STOP"))
+        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "WAITING FOR POD TO STOP"))
     except MySQLdb.OperationalError, e:
         # Ignore error because we need to keep braking
         logging.error(e)
@@ -29,7 +29,7 @@ def start(pod_data, sql_wrapper, drive_controller):
                 break
 
     try:
-        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "POD IS STOPPED"))
+        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "POD IS STOPPED"))
     except MySQLdb.OperationalError, e:
         # Ignore error because we need to keep braking
         logging.error(e)

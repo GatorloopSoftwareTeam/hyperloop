@@ -20,4 +20,4 @@ def init_acc(pod_data, sql_wrapper, logging):
         pod_data.acceleration.y_g = axes['y']
         pod_data.acceleration.z_g = axes['z']
         sql_wrapper.execute("INSERT INTO acc VALUES (%s,%s,%s,%s)",
-                            (datetime.datetime.now(), axes['x'], axes['y'], axes['z']))
+                            (datetime.datetime.now().strftime(constants.TIME_FORMAT), axes['x'], axes['y'], axes['z']))

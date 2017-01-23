@@ -24,7 +24,7 @@ def init_bms(pod_data, sql_wrapper, logging):
             pod_data.v_val = bms_v_val
             pod_data.vs_val = bms_vs_val
             logging.debug("BMS initialized with voltage %d and %d",(bms_v_val, bms_vs_val))
-            sql_wrapper.execute("INSERT INTO bms VALUES (%s,%s,%s)", (datetime.datetime.now(), bms_v_val, bms_vs_val))
+            sql_wrapper.execute("INSERT INTO bms VALUES (%s,%s,%s)", (datetime.datetime.now().strftime(constants.TIME_FORMAT), bms_v_val, bms_vs_val))
             return 1
         # compare to >1 to make sure it isn't just an uninitialized 0
         elif 1 < bms_v_val <= constants.LOW_BATTERY and 1 < bms_vs_val <= constants.LOW_BATTERY:

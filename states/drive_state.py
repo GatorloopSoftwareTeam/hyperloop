@@ -41,7 +41,7 @@ def go_backward():
 
 
 def start(sql_wrapper, drive_controller):
-    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "DRIVE STATE STARTED"))
+    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "DRIVE STATE STARTED"))
 
     while True:
         line = raw_input("Pod is stopped. Please enter a command: \n"

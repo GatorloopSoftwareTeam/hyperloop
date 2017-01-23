@@ -3,6 +3,7 @@ import constants
 import datetime
 import MySQLdb
 import time
+import constants
 
 
 def start(pod_data, sql_wrapper, drive_controller):
@@ -16,7 +17,7 @@ def start(pod_data, sql_wrapper, drive_controller):
 
     try:
         pod_data.state = constants.STATE_BRAKING
-        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now(), "BRAKE STARTED"))
+        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "BRAKE STARTED"))
     except MySQLdb.OperationalError, e:
         # Ignore error because we need to keep braking
         logging.error(e)

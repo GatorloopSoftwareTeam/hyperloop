@@ -1,9 +1,7 @@
 import sys
 sys.path.append('../')
-import logging
-import socket
 import unittest
-from spacex_udp_sender import *
+from reporters.spacex_udp_sender import *
 from dto.pod_data import PodData
 from mockito import *
 

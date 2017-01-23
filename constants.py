@@ -14,6 +14,10 @@ STATE_BRAKING = 5  # pod is applying brakes
 SPACEX_UDP_IP = "192.168.0.1"
 SPACEX_UDP_PORT = 3000
 
+# Suspension UDP connection info
+SUSPENSION_UDP_IP = "192.168.0.10"
+SUSPENSION_UDP_PORT = 3000
+
 # Local mysql db connection info
 MYSQL_HOST = "localhost"
 MYSQL_USER = "root"
@@ -44,6 +48,9 @@ Total time that the pusher is active (in seconds)
 """
 TOTAL_PUSH_TIME = 4.0
 
+# Battery Voltages
+LOW_BATTERY = 30000
+HIGH_BATTERY = 45000
 
 # Battery temperature sensors
 MAIN_BATTERY_1 = "28-0416513911ff"
@@ -53,6 +60,9 @@ AUX_BATTERY_1 = "28-041652b584ff"
 AUX_BATTERY_2 = "28-0416508ce6ff"
 AUX_BATTERY_3 = "28-0316457ef7ff"
 
+# Battery Temp Limits
+BATTERY_MAX_TEMP = 70
+BATTERY_LOW_TEMP = 20
 
 # Arduino
 OK = "RUOK"

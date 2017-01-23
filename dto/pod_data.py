@@ -1,6 +1,6 @@
 import logging
+import constants
 
-import spacex_udp_sender
 from dto.acc_data import AccelerationData
 
 
@@ -36,11 +36,13 @@ class PodData(object):
         self.scu_sus_started=False
         self.scu_log_started=False
 
-    # TODO: what do we want to send to spacex?
-    def to_str(self):
-        return str(
-            "STATE: " + str(self.state) + "," +
-            "SPEED: " + str(self.speed) + "," +
-            "ACCELERATION: X: " + str(self.acceleration.x_g) + " Y: " + str(self.acceleration.y_g) + " Z: " + str(self.acceleration.z_g) + ","
+    @property
+    def state(self):
+        return self._state
 
-        )
+    @state.setter
+    def state(self, state):
+        if self._state != constants.FAULT:
+            self._state = state
+        else:
+            logging.debug("Error: trying to change state from a fault state is not allowed")

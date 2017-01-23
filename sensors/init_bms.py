@@ -20,16 +20,16 @@ def init_bms(pod_data, sql_wrapper, logging):
             bms_vs_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
 
         # TODO add the correct battery voltages as parameters
-        if bms_v_val > 30000 and bms_v_val < 45000 and bms_vs_val > 30000 and bms_vs_val < 45000:
+        if constants.LOW_BATTERY < bms_v_val < constants.HIGH_BATTERY and constants.LOW_BATTERY < bms_vs_val < constants.HIGH_BATTERY:
             pod_data.v_val = bms_v_val
             pod_data.vs_val = bms_vs_val
-            logging.debug("BMS initialized with voltage %d and %d",(bms_v_val,bms_vs_val))
+            logging.debug("BMS initialized with voltage %d and %d",(bms_v_val, bms_vs_val))
             sql_wrapper.execute("INSERT INTO bms VALUES (%s,%s,%s)", (datetime.datetime.now(), bms_v_val, bms_vs_val))
             return 1
         # compare to >1 to make sure it isn't just an uninitialized 0
-        elif bms_v_val > 1 and bms_v_val <= 30000 and bms_vs_val > 1 and bms_vs_val <= 30000:
-            logging.debug("FAULT: BMS initialized with voltage %d and %d" % (bms_v_val,bms_vs_val) )
-            pod_data.state = 0
+        elif 1 < bms_v_val <= constants.LOW_BATTERY and 1 < bms_vs_val <= constants.LOW_BATTERY:
+            logging.debug("FAULT: BMS initialized with invalid voltage %d and %d" % (bms_v_val, bms_vs_val))
+            pod_data.state = constants.STATE_FAULT
 
 
         # bms_recv = int(sock.recvfrom(1024)[0])

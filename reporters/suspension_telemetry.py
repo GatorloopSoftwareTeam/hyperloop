@@ -10,11 +10,11 @@ def send_suspension_telemetry(pod_data, logging):
         network_endinanness = '>'
     else:
         network_endinanness = '<'
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
     while True:
         try:
             # send state via udp socket
-            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
-
             suspension_telemetry_str = struct.pack(network_endinanness+'BBff', 0x20, 8, pod_data.wheel_1_speed, pod_data.acceleration.y_g);
             sock.sendto(suspension_telemetry_str, (constants.SUSPENSION_UDP_IP, constants.SUSPENSION_UDP_PORT))
             sleep(.1)

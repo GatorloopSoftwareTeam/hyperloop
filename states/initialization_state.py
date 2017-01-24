@@ -14,6 +14,7 @@ from sensors.init_bms import init_bms
 from sensors.get_bms import get_bms
 from sensors.init_battery_temperature import init_battery_temperature
 from sensors.get_battery_temperature import get_battery_temperature
+from sensors.get_proc_temp import get_proc_temp
 from sensors.init_suspension import init_suspension
 from sensors.init_acc import init_acc
 
@@ -32,6 +33,9 @@ def start(pod_data, sql_wrapper, drive_controller):
 
     logging.debug("set pod state to 1 (idle)")
     pod_data.state = constants.STATE_IDLE
+
+    # start getting processor temperatures
+    thread.start_new_thread(get_proc_temp, (sql_wrapper, logging))
 
     # test the accelerometer
     init_acc(pod_data, sql_wrapper, logging)

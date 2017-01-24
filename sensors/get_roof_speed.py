@@ -25,6 +25,7 @@ def getRoofSpeed(ser1, ser_str, num_stripes_brake, num_stripes_panic, pod_data, 
             total_stripes += 1
             logging.debug("total stripes dist is now " + str(total_stripes))
             pod_data.num_stripes_passed = total_stripes
+            pod_data.last_speed_update = datetime.datetime.now()
             #last_stripe_diff = stripe_diff
             #last_stripe_time = stripe_time
             #stripe_time = datetime.datetime.now()

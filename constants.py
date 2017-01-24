@@ -50,9 +50,12 @@ Total time that the pusher is active (in seconds)
 """
 TOTAL_PUSH_TIME = 4.0
 
+# Amount of time to wait for a speed update to consider that the pod is no longer moving
+SPEED_UPDATE_TIMEDIFF_SEC = 2
+
 # Battery Voltages
-LOW_BATTERY = 30000
-HIGH_BATTERY = 45000
+LOW_BATTERY = 32000
+HIGH_BATTERY = 44000
 
 # Battery temperature sensors
 MAIN_BATTERY_1 = "28-0416513911ff"
@@ -63,7 +66,7 @@ AUX_BATTERY_2 = "28-0416508ce6ff"
 AUX_BATTERY_3 = "28-0316457ef7ff"
 
 # Battery Temp Limits
-BATTERY_MAX_TEMP = 70
+BATTERY_MAX_TEMP = 65
 BATTERY_LOW_TEMP = 20
 
 # Arduino

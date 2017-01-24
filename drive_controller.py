@@ -21,6 +21,7 @@ KILL_ALL = constants.KILL_ALL + END_OF_MESSAGE
 KILL_POD = constants.KILL_POD + END_OF_MESSAGE
 RUNNING = constants.RUNNING + END_OF_MESSAGE
 STATUS = constants.STATUS + END_OF_MESSAGE
+BLDC_BRAKE = constants.BLDC_BRAKE + END_OF_MESSAGE
 
 OK_RESPONSE = "IAMOK"
 
@@ -64,6 +65,9 @@ class DriveController:
 
     def send_backward(self):
         self.ser.write(BACKWARD)
+
+    def send_bldc_brake(self):
+        self.ser.write(BLDC_BRAKE)
 
     def send_engage_auxiliary_brakes(self):
         self.ser.write(ENGAGE_AUXILIARY_BRAKES)

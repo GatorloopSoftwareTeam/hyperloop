@@ -22,10 +22,14 @@ void pwm_out(){
 }
 
 void setup(){
-  pinMode(13, OUTPUT); // PWM
-  pinMode(44, OUTPUT); // Enable
-  pinMode(42, OUTPUT); // FWD, BCK
-  pinMode(46, OUTPUT); // BR
+  pinMode(13, OUTPUT); // BLDC PWM Right
+  pinMode(12, OUTPUT); // BLDC PWM Left
+  pinMode(42, OUTPUT); // BLDC Right Enable
+  pinMode(43, OUTPUT); // BLDC Left Enable
+  pinMode(40, OUTPUT); // Direction Right
+  pinMode(41, OUTPUT); // Direction Left
+  pinMode(38, OUTPUT); // Brake Right
+  pinMode(39, OUTPUT); // Brake Left
 
   // int myEraser = 7;
   // TCCR0B &= ~myEraser;

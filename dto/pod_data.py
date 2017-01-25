@@ -15,7 +15,7 @@ class PodData(object):
         self.batt_temp=0
         self.pod_temp=0
 
-        self.state = 1
+        self._state = 1
         # self.speed = 0
         self.acceleration = AccelerationData()
         self.num_stripes_passed = 0
@@ -23,7 +23,7 @@ class PodData(object):
         self.wheel_2_dist = 0
         self.wheel_1_speed = 0
         self.wheel_2_speed = 0
-        self.last_speed_update = datetime.datetime(year=2028,month=1,day=1)
+        self.last_speed_update = datetime.datetime(datetime.datetime.MAXYEAR)
         self.v_val = 0
         self.vs_val = 0
         self.main_battery_1_temp = 0

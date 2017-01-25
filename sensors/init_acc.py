@@ -1,17 +1,23 @@
 from lib.mma8451 import MMA8451
 import datetime
 import constants
+import time
 
 
 def init_acc(pod_data, sql_wrapper, logging):
     acc = MMA8451()
 
     # init
-    # TODO: move this into init
     axes = acc.get_axes_measurement()
+    #axes['x'] = 0
+    #axes['y'] = 0
+    #axes['z'] = 0
+
     if axes['x'] == 0 and axes['y'] == 0 and axes['z'] == 0:
         pod_data.state = constants.STATE_FAULT
         logging.debug("Fault: Accelerometer returned all 0s")
+        time.sleep(1)
+        exit(0)
     elif axes['z'] < .9:
         pod_data.state = constants.STATE_FAULT
         logging.debug("BAD ACCELEROMETER POSITIONING, MAKE SURE Z IS DOWN AND THE ACC IS FLAT")

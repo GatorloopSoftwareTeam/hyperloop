@@ -21,13 +21,7 @@ import states.wait_for_pod_to_stop_state
 from drive_controller import DriveController
 from dto.pod_data import PodData
 from mysql_wrapper import MySQLWrapper
-from reporters.spacex_udp_sender import send_pod_data
-
-
-def send_pod_data_in_interval(data):
-    while True:
-        send_pod_data(data, logging)
-        time.sleep(.1)
+from reporters.spacex_udp_sender import spacex_udp_sender
 
 
 def enter_fault_state():
@@ -41,7 +35,7 @@ logging.basicConfig(filename='test.log', level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler())
 pod_data = PodData()
 sql_wrapper = MySQLWrapper(logging)
-thread.start_new_thread(send_pod_data_in_interval, (pod_data,))
+thread.start_new_thread(spacex_udp_sender, (pod_data,logging))
 drive_controller = DriveController()
 
 try:
@@ -67,6 +61,7 @@ except MySQLdb.OperationalError, e:
 states.brake_state.start(pod_data, sql_wrapper, drive_controller)
 thread.start_new_thread(states.wait_for_pod_to_stop_state.start, (pod_data, sql_wrapper, drive_controller))
 states.brake_2_state.start(pod_data, drive_controller, sql_wrapper)
-states.drive_state.start(sql_wrapper, drive_controller)
+states.drive_state.start(pod_data, suspension_tcp_socket, sql_wrapper, drive_controller)
+
 
 

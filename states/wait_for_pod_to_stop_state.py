@@ -7,7 +7,10 @@ import constants
 
 def _check_pod_is_stopped(pod_data):
     time.sleep(1)
-    if pod_data.acceleration.y_g < 0.1:
+
+       #pod_data.acceleration.y_g < 0.1 and
+    if datetime.datetime.now() - pod_data.last_speed_update  > datetime.timedelta(seconds=constants.SPEED_UPDATE_TIMEDIFF_SEC):
+        #if the time difference is more than 2 seconds, we haven't gotten a speed in a while
         return True
     return False
 

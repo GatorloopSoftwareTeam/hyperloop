@@ -48,7 +48,7 @@ except RuntimeError, e:
     enter_fault_state()
 
 states.idle_state.start(pod_data, sql_wrapper)
-states.sensor_data_acquisition_state.start(pod_data, suspension_tcp_socket, sql_wrapper)
+states.sensor_data_acquisition_state.start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty)
 states.ready_state.start(pod_data, sql_wrapper)
 
 try:

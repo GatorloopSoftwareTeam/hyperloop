@@ -20,6 +20,15 @@ int la2_dir_pin = 51;
 int la1_pwm_pin = 6;
 int la2_pwm_pin = 7;
 
+int bldc_pwm_right_pin = 13;
+int bldc_pwm_left_pin = 12;
+int bldc_right_enable_pin = 42;
+int bldc_left_enable_pin = 43;
+int bldc_direction_right_pin = 40;
+int bldc_direction_left_pin = 41;
+int bldc_brake_right_pin = 38;
+int bldc_brake_left_pin = 39;
+
 boolean stopped_flag = false;
 long brake_release_time = 1.5 * 1000;
 long actuator_active_time = 1.5 * 1000;
@@ -59,6 +68,15 @@ void setup() {
   pinMode(la2_dir_pin, OUTPUT);
   pinMode(la1_pwm_pin, OUTPUT);
   pinMode(la2_pwm_pin, OUTPUT);
+
+  pinMode(bldc_pwm_right_pin, OUTPUT); // BLDC PWM Right
+  pinMode(bldc_pwm_left_pin, OUTPUT); // BLDC PWM Left
+  pinMode(bldc_right_enable_pin, OUTPUT); // BLDC Right Enable
+  pinMode(bldc_left_enable_pin, OUTPUT); // BLDC Left Enable
+  pinMode(bldc_direction_right_pin, OUTPUT); // Direction Right
+  pinMode(bldc_direction_left_pin, OUTPUT); // Direction Left
+  pinMode(bldc_brake_right_pin, OUTPUT); // Brake Right
+  pinMode(bldc_brake_left_pin, OUTPUT); // Brake Left
 
   // Clear stopped_flag
   stopped_flag = false;
@@ -144,6 +162,39 @@ void offLinearActuators() {
   digitalWrite(la2_dir_pin, LOW);
 
   delay(1000);
+}
+
+void goForward() {
+  digitalWrite(bldc_left_enable_pin, HIGH);
+  digitalWrite(bldc_right_enable_pin, HIGH);
+
+  digitalWrite(bldc_left_brake_pin, LOW);
+  digitalWrite(bldc_right_brake_pin, LOW);
+
+  digitalWrite(bldc_left_direction_pin, HIGH);
+  digitalWrite(bldc_right_direction_pin, HIGH);
+}
+
+void goBackward() {
+  digitalWrite(bldc_left_enable_pin, HIGH);
+  digitalWrite(bldc_right_enable_pin, HIGH);
+
+  digitalWrite(bldc_left_brake_pin, LOW);
+  digitalWrite(bldc_right_brake_pin, LOW);
+
+  digitalWrite(bldc_left_direction_pin, LOW);
+  digitalWrite(bldc_right_direction_pin, LOW);
+}
+
+void bldcBrake() {
+  digitalWrite(bldc_left_enable_pin, HIGH);
+  digitalWrite(bldc_right_enable_pin, HIGH);
+
+  digitalWrite(bldc_left_brake_pin, HIGH);
+  digitalWrite(bldc_right_brake_pin, HIGH);
+
+  digitalWrite(bldc_left_direction_pin, LOW);
+  digitalWrite(bldc_right_direction_pin, LOW);
 }
 
 void sendAcknowledgement(String state, int piNumber) {
@@ -295,6 +346,15 @@ boolean takeActionOnByte(String inByte, int piNumber){
   } else if (inByte == "STATUS"){
     sendStatus(piNumber);
 
+  } else if (inByte == "FW"){
+    goForward();
+    sendAcknowledgement(inByte + "\n", piNumber);
+  } else if (inByte == "BW"){
+    goBackward();
+    sendAcknowledgement(inByte + "\n", piNumber);
+  } else if (inByte == "BK") {
+    bldcBrake();
+    sendAcknowledgement(inByte + "\n", piNumber);
   } else {
     // Handle invalid or empty commands
     if (inByte.length() != 0){

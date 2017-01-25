@@ -84,6 +84,7 @@ KILL_ALL = "KILLALL"
 RUNNING = "RUNNING"
 STATUS = "STATUS"
 KILL_POD = "KILLPOD"
+BLDC_BRAKE = "BK"
 
 # Suspension codes
 network_endinanness = '>'

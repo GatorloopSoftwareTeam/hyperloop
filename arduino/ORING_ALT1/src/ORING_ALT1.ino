@@ -44,14 +44,14 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial1.setTimeout(10);
-  Serial1.print("Serial for Pi1 initialized\n");
+  // Serial1.print("Serial for Pi1 initialized\n");
 
   Serial2.begin(9600);
   while (!Serial2) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial2.setTimeout(10);
-  Serial2.print("Serial for Pi2 initialized\n");
+  // Serial2.print("Serial for Pi2 initialized\n");
 
   // Set pin directions
   pinMode(mb1_dir_pin, OUTPUT);
@@ -83,7 +83,7 @@ void setup() {
 
   // Init Servo
   myservo.attach(9); // Servo to Pin9
-  myservo2.attach(10); // Servo to Pin9
+  myservo2.attach(10); // Servo to Pin10
 }
 
 void engageMainBrakes() {
@@ -168,33 +168,33 @@ void goForward() {
   digitalWrite(bldc_left_enable_pin, HIGH);
   digitalWrite(bldc_right_enable_pin, HIGH);
 
-  digitalWrite(bldc_left_brake_pin, LOW);
-  digitalWrite(bldc_right_brake_pin, LOW);
+  digitalWrite(bldc_brake_left_pin, LOW);
+  digitalWrite(bldc_brake_right_pin, LOW);
 
-  digitalWrite(bldc_left_direction_pin, HIGH);
-  digitalWrite(bldc_right_direction_pin, HIGH);
+  digitalWrite(bldc_direction_left_pin, HIGH);
+  digitalWrite(bldc_direction_right_pin, HIGH);
 }
 
 void goBackward() {
   digitalWrite(bldc_left_enable_pin, HIGH);
   digitalWrite(bldc_right_enable_pin, HIGH);
 
-  digitalWrite(bldc_left_brake_pin, LOW);
-  digitalWrite(bldc_right_brake_pin, LOW);
+  digitalWrite(bldc_brake_left_pin, LOW);
+  digitalWrite(bldc_brake_right_pin, LOW);
 
-  digitalWrite(bldc_left_direction_pin, LOW);
-  digitalWrite(bldc_right_direction_pin, LOW);
+  digitalWrite(bldc_direction_left_pin, LOW);
+  digitalWrite(bldc_direction_right_pin, LOW);
 }
 
 void bldcBrake() {
   digitalWrite(bldc_left_enable_pin, HIGH);
   digitalWrite(bldc_right_enable_pin, HIGH);
 
-  digitalWrite(bldc_left_brake_pin, HIGH);
-  digitalWrite(bldc_right_brake_pin, HIGH);
+  digitalWrite(bldc_brake_left_pin, HIGH);
+  digitalWrite(bldc_brake_right_pin, HIGH);
 
-  digitalWrite(bldc_left_direction_pin, LOW);
-  digitalWrite(bldc_right_direction_pin, LOW);
+  digitalWrite(bldc_direction_left_pin, LOW);
+  digitalWrite(bldc_direction_right_pin, LOW);
 }
 
 void sendAcknowledgement(String state, int piNumber) {
@@ -226,7 +226,7 @@ void kill_switch(){
     myservo2.write(pos);
     delay(30);                       // waits 15ms for the servo to reach the position
   }
-  for (pos = 180; pos >= 90; pos -= 10) { // goes from 180 degrees to 0 degrees
+  for (pos = 90; pos >= 0; pos -= 10) { // goes from 180 degrees to 0 degrees
     myservo.write(pos);              // tell servo to go to position in variable 'pos'
     myservo2.write(pos);
     delay(30);                       // waits 15ms for the servo to reach the position

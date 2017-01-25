@@ -6,6 +6,7 @@ void pwm_out(){
   // digitalWrite(13, LOW);
   // delayMicroseconds(60);
   analogWrite(13, 255);
+  analogWrite(12, 255);
 //   int y=1;
 //   while(y==1){
 //
@@ -38,10 +39,13 @@ void setup(){
 }
 
 void loop(){
-  digitalWrite(44, LOW);
   digitalWrite(42, HIGH);
-  digitalWrite(46, LOW);
-  delay(5000);
+  digitalWrite(43, HIGH);
+  digitalWrite(40, HIGH);
+  digitalWrite(41, HIGH);
+  digitalWrite(38, HIGH);
+  digitalWrite(39, HIGH);
+  delay(1000);
   pwm_out();
 
 }

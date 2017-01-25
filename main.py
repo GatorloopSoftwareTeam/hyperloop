@@ -66,7 +66,7 @@ except MySQLdb.OperationalError, e:
 
 states.brake_state.start(pod_data, sql_wrapper, drive_controller)
 thread.start_new_thread(states.wait_for_pod_to_stop_state.start, (pod_data, sql_wrapper, drive_controller))
-states.brake_2_state.start(pod_data, drive_controller)
+states.brake_2_state.start(pod_data, drive_controller, sql_wrapper)
 states.drive_state.start(sql_wrapper, drive_controller)
 
 

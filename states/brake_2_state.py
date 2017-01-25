@@ -1,10 +1,10 @@
 import time
 import logging
-import RPi.GPIO as GPIO
 import constants
+import datetime
 
 
-def start(pod_data, drive_controller):
+def start(pod_data, drive_controller, sql_wrapper):
 
     initial_velocity = max(pod_data.wheel_1_speed, pod_data.wheel_2_speed)
     iteration = 0
@@ -22,6 +22,8 @@ def start(pod_data, drive_controller):
             while drive_controller.get_response() != constants.ENGAGE_AUXILIARY_BRAKES:
                 drive_controller.send_engage_auxiliary_brakes()
                 time.sleep(.1)
+            sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""",
+                                (datetime.datetime.now().strftime(constants.TIME_FORMAT), "AUX BRAKE ENGAGED"))
             logging.debug("second brake activated")
             break
         else:

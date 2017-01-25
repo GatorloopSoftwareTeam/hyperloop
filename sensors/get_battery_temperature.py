@@ -32,6 +32,7 @@ def _read_temp(device_file, pod_data, sql_wrapper, sensor_number):
             if formatted_temp_string > constants.BATTERY_MAX_TEMP:
                 # bad temp, enter fault state
                 pod_data.state = constants.STATE_FAULT
+                # TODO: save fault state
 
             if sensor_number == 1:
                 pod_data.main_battery_1_temp = formatted_temp_string
@@ -62,16 +63,23 @@ def _read_temp(device_file, pod_data, sql_wrapper, sensor_number):
 def get_battery_temperature(pod_data, sql_wrapper, logging):
     logging.debug("Get battery temperature started")
 
-    m1_file = _get_device_path(constants.MAIN_BATTERY_1)
-    m2_file = _get_device_path(constants.MAIN_BATTERY_2)
-    m3_file = _get_device_path(constants.MAIN_BATTERY_3)
-    a1_file = _get_device_path(constants.AUX_BATTERY_1)
-    a2_file = _get_device_path(constants.AUX_BATTERY_2)
-    a3_file = _get_device_path(constants.AUX_BATTERY_3)
+    # TODO: change this back after functional test
+    # m1_file = _get_device_path(constants.MAIN_BATTERY_1)
+    # m2_file = _get_device_path(constants.MAIN_BATTERY_2)
+    # m3_file = _get_device_path(constants.MAIN_BATTERY_3)
+    # a1_file = _get_device_path(constants.AUX_BATTERY_1)
+    # a2_file = _get_device_path(constants.AUX_BATTERY_2)
+    # a3_file = _get_device_path(constants.AUX_BATTERY_3)
+    #
+    # thread.start_new_thread(_read_temp, (m1_file, pod_data, sql_wrapper, 1))
+    # thread.start_new_thread(_read_temp, (m2_file, pod_data, sql_wrapper, 2))
+    # thread.start_new_thread(_read_temp, (m3_file, pod_data, sql_wrapper, 3))
+    # thread.start_new_thread(_read_temp, (a1_file, pod_data, sql_wrapper, 4))
+    # thread.start_new_thread(_read_temp, (a2_file, pod_data, sql_wrapper, 5))
+    # thread.start_new_thread(_read_temp, (a3_file, pod_data, sql_wrapper, 6))
 
-    thread.start_new_thread(_read_temp, (m1_file, pod_data, sql_wrapper, 1))
-    thread.start_new_thread(_read_temp, (m2_file, pod_data, sql_wrapper, 2))
-    thread.start_new_thread(_read_temp, (m3_file, pod_data, sql_wrapper, 3))
-    thread.start_new_thread(_read_temp, (a1_file, pod_data, sql_wrapper, 4))
-    thread.start_new_thread(_read_temp, (a2_file, pod_data, sql_wrapper, 5))
-    thread.start_new_thread(_read_temp, (a3_file, pod_data, sql_wrapper, 6))
+    high_temp_file = "~/highTempFile"
+    low_temp_file = "~/lowTempFile"
+    reg_temp_file = "~/regTempFile"
+
+    thread.start_new_thread(_read_temp, (high_temp_file, pod_data, sql_wrapper, 1))

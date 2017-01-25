@@ -1,5 +1,5 @@
 import os
-import glob
+import datetime
 
 import constants
 
@@ -22,14 +22,19 @@ def _get_device_path(device_directory):
 
 
 def init_battery_temperature(pod_data, sql_wrapper, logging):
-    m1_file = _get_device_path(constants.MAIN_BATTERY_1)
-    m2_file = _get_device_path(constants.MAIN_BATTERY_2)
-    m3_file = _get_device_path(constants.MAIN_BATTERY_3)
-    a1_file = _get_device_path(constants.AUX_BATTERY_1)
-    a2_file = _get_device_path(constants.AUX_BATTERY_2)
-    a3_file = _get_device_path(constants.AUX_BATTERY_3)
-
-    device_files = [m1_file, m2_file, m3_file, a1_file, a2_file, a3_file]
+    # TODO: change this back after functional test
+    # m1_file = _get_device_path(constants.MAIN_BATTERY_1)
+    # m2_file = _get_device_path(constants.MAIN_BATTERY_2)
+    # m3_file = _get_device_path(constants.MAIN_BATTERY_3)
+    # a1_file = _get_device_path(constants.AUX_BATTERY_1)
+    # a2_file = _get_device_path(constants.AUX_BATTERY_2)
+    # a3_file = _get_device_path(constants.AUX_BATTERY_3)
+    #
+    # device_files = [m1_file, m2_file, m3_file, a1_file, a2_file, a3_file]
+    high_temp_file = "~/highTempFile"
+    low_temp_file = "~/lowTempFile"
+    reg_temp_file = "~/regTempFile"
+    device_files = [high_temp_file]
     sensor_number = 1
     for device_file in device_files:
         initialized = False
@@ -46,9 +51,9 @@ def init_battery_temperature(pod_data, sql_wrapper, logging):
                     logging.debug("Fault: We have a bad battery temperature of %f on device file %s", (formatted_temp_string, device_file))
                     # set the fault state
                     pod_data.state = constants.STATE_FAULT
-                    # TODO we should probably have this be put into the DB
+                    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
                 # checks for a valid temp
-                elif  constants.BATTERY_LOW_TEMP <= formatted_temp_string <= constants.BATTERY_MAX_TEMP:
+                elif constants.BATTERY_LOW_TEMP <= formatted_temp_string <= constants.BATTERY_MAX_TEMP:
                     logging.debug("Initialized temp sensor %s with temp %f", (device_file, formatted_temp_string))
                     initialized = True
                 else:

@@ -89,6 +89,11 @@ STATUS = "STATUS"
 KILL_POD = "KILLPOD"
 BLDC_BRAKE = "BK"
 
+# Optical Sensor
+RIGHT_WHEEL_OK_RESPONSE = "imokwr\n"
+LEFT_WHEEL_OK_RESPONSE = "imokwl\n"
+ROOF_OK_RESPONSE = "imoks\n"
+
 # Suspension codes
 network_endinanness = '>'
 ping_message_req = struct.pack(network_endinanness+'BB', 0x10, 0)

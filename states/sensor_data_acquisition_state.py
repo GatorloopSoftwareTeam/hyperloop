@@ -9,7 +9,7 @@ from reporters.suspension_telemetry import send_suspension_telemetry
 def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
     logging.debug("Now in SENSOR DATA ACQUISITION state")
     sql_wrapper\
-        .execute("""INSERT INTO states VALUES (%s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "SENSOR DATA ACQUISITION STARTED"))
+        .execute("""INSERT INTO states VALUES (NULL,%s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "SENSOR DATA ACQUISITION STARTED"))
 
     thread.start_new_thread(sensors.get_acc.getAcc, (pod_data, sql_wrapper, logging))
 

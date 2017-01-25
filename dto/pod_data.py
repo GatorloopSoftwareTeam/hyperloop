@@ -23,7 +23,7 @@ class PodData(object):
         self.wheel_2_dist = 0
         self.wheel_1_speed = 0
         self.wheel_2_speed = 0
-        self.last_speed_update = datetime.datetime(datetime.datetime.MAXYEAR)
+        self.last_speed_update = datetime.datetime(year=datetime.MAXYEAR, month=1, day=1)
         self.v_val = 0
         self.vs_val = 0
         self.main_battery_1_temp = 0

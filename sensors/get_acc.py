@@ -21,7 +21,7 @@ def getAcc(pod_data, sql_wrapper, logging):
         logging.debug(axes)
         logging.debug("Moving y average is " + str(pod_data.acceleration.moving_y_average))
 
-        sql_wrapper.execute("INSERT INTO acc VALUES (%s,%s,%s,%s)", (datetime.datetime.now().strftime(constants.TIME_FORMAT), axes['x'], axes['y'], axes['z']))
+        sql_wrapper.execute("INSERT INTO acc VALUES (NULL,%s,%s,%s,%s)", (datetime.datetime.now().strftime(constants.TIME_FORMAT), axes['x'], axes['y'], axes['z']))
 
         ##VERY IMPORTANT
         ##THIS IS THE G FORCES WE EXPECT TO DETECT WHEN MOVING TO COAST

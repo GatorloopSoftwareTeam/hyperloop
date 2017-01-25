@@ -36,27 +36,27 @@ def _read_temp(device_file, pod_data, sql_wrapper, sensor_number):
 
             if sensor_number == 1:
                 pod_data.main_battery_1_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_m1_temp VALUES ( %s,%f)""",
+                sql_wrapper.execute("""INSERT INTO battery_m1_temp VALUES (NULL, %s,%s)""",
                                     (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
             elif sensor_number == 2:
                 pod_data.main_battery_2_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_m2_temp VALUES ( %s,%f)""",
+                sql_wrapper.execute("""INSERT INTO battery_m2_temp VALUES (NULL, %s,%f)""",
                                     (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
             elif sensor_number == 3:
                 pod_data.main_battery_3_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_m3_temp VALUES ( %s,%f)""",
+                sql_wrapper.execute("""INSERT INTO battery_m3_temp VALUES (NULL, %s,%f)""",
                                     (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
             elif sensor_number == 4:
                 pod_data.aux_battery_1_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_a1_temp VALUES ( %s,%f)""",
+                sql_wrapper.execute("""INSERT INTO battery_a1_temp VALUES (NULL, %s,%f)""",
                                     (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
             elif sensor_number == 5:
                 pod_data.aux_battery_2_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_a2_temp VALUES ( %s,%f)""",
+                sql_wrapper.execute("""INSERT INTO battery_a2_temp VALUES (NULL, %s,%f)""",
                                     (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
             elif sensor_number == 6:
                 pod_data.aux_battery_3_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_a3_temp VALUES ( %s,%f)""",
+                sql_wrapper.execute("""INSERT INTO battery_a3_temp VALUES (NULL, %s,%f)""",
                                     (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
 
 
@@ -78,8 +78,8 @@ def get_battery_temperature(pod_data, sql_wrapper, logging):
     # thread.start_new_thread(_read_temp, (a2_file, pod_data, sql_wrapper, 5))
     # thread.start_new_thread(_read_temp, (a3_file, pod_data, sql_wrapper, 6))
 
-    high_temp_file = "~/highTempFile"
-    low_temp_file = "~/lowTempFile"
-    reg_temp_file = "~/regTempFile"
+    high_temp_file = "/home/pi/highTempFile"
+    low_temp_file = "/home/pi/lowTempFile"
+    reg_temp_file = "/home/pi/regTempFile"
 
     thread.start_new_thread(_read_temp, (high_temp_file, pod_data, sql_wrapper, 1))

@@ -1,5 +1,6 @@
 import datetime
 import constants
+import time
 
 
 def go_forward():
@@ -10,7 +11,6 @@ def go_forward():
 
     meters_to_travel = 0
     try:
-        global meters_to_travel
         meters_to_travel = int(line)
         if meters_to_travel < 0:
             raise ValueError
@@ -29,7 +29,6 @@ def go_backward():
 
     meters_to_travel = 0
     try:
-        global meters_to_travel
         meters_to_travel = int(line)
         if meters_to_travel < 0:
             raise ValueError
@@ -40,7 +39,7 @@ def go_backward():
     # TODO: send go backward until we hit distance?
 
 
-def start(sql_wrapper, drive_controller):
+def start(pod_data, suspension_tcp_socket, sql_wrapper, drive_controller):
     sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "DRIVE STATE STARTED"))
 
     print "Pod is stopped."
@@ -53,13 +52,13 @@ def start(sql_wrapper, drive_controller):
                          "5. Forward\n"
                          "6. Backward\n"
                          "7. Raise Linear Actuators\n"
-                         "8. Brake BLDC\n")
+                         "8. Brake BLDC\n"
+                         "9. Disable Suspension\n")
 
         choice = -1
         try:
-            global choice
             choice = int(line)
-            if choice < 1 or choice > 8:
+            if choice < 1 or choice > 9:
                 raise ValueError
         except ValueError:
             print "Enter a value between 1-8"
@@ -108,5 +107,13 @@ def start(sql_wrapper, drive_controller):
             response = drive_controller.get_response()
             if response != constants.BLDC_BRAKE:
                 print "BLDC brake not acknowledged. Got: " + response
+        elif choice == 9:
+            while pod_data.scu_sus_started == True:
+                suspension_tcp_socket.send(constants.stop_scu_message_req)
+                time.sleep(.5)
+            while pod_data.scu_log_started == True:
+                suspension_tcp_socket.send(constants.stop_logging_message_req)
+                time.sleep(.5)
+
         else:
-            print "Enter a value between 1-8"
+            print "Enter a value between 1-9"

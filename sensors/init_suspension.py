@@ -29,23 +29,29 @@ def recieve_suspension_tcp(tcp_sock, pod_data):
             print >>sys.stderr, 'received: START SCU REPLY \TypeID: %d PayloadLength: %d Start Fault %d' % scu_message_request
             # Check Suspension Response
             if (scu_message_request[2]==0x00):
-                # We didn't receive a successful response
+                # We received a successful response
                 pod_data.scu_sus_started = True
 
         elif (scu_message_request[0] == 0x54): # STOP SCU REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BBH', vcu_tcp_received_message)
             print >>sys.stderr, 'received: STOP SCU REPLY \TypeID: %d PayloadLength: %d Stop Fault %d' % scu_message_request
+            if (scu_message_request[2]==0x00):
+                # We received a successful response
+                pod_data.scu_sus_started = False
 
         elif (scu_message_request[0] == 0x52): # START LOGGING REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BB8s', vcu_tcp_received_message)
             print >>sys.stderr, 'received: START LOGGING REPLY \TypeID: %d PayloadLength: %d Filename %s' % scu_message_request
             if (scu_message_request[2]==0x00):
-                # We didn't receive a successful response
+                # We received a successful response
                 pod_data.scu_log_started = True
 
         elif (scu_message_request[0] == 0x53): # STOP LOGGING REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BB8s', vcu_tcp_received_message)
             print >>sys.stderr, 'received: STOP LOGGING REPLY \TypeID: %d PayloadLength: %d Filename %s' % scu_message_request
+            if (scu_message_request[2]==0x00):
+                # We received a successful response
+                pod_data.scu_sus_started = False
 
 def init_suspension(pod_data, logging):
     logging.debug("About to init suspension")

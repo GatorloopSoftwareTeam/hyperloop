@@ -6,10 +6,8 @@ import constants
 
 
 def _check_pod_is_stopped(pod_data):
-    time.sleep(1)
-
        #pod_data.acceleration.y_g < 0.1 and
-    if datetime.datetime.now() - pod_data.last_speed_update  > datetime.timedelta(seconds=constants.SPEED_UPDATE_TIMEDIFF_SEC):
+    if datetime.datetime.now() - pod_data.last_speed_update > datetime.timedelta(seconds=constants.SPEED_UPDATE_TIMEDIFF_SEC):
         #if the time difference is more than 2 seconds, we haven't gotten a speed in a while
         return True
     return False
@@ -23,12 +21,9 @@ def start(pod_data, sql_wrapper, drive_controller):
         logging.error(e)
 
     while True:
-        # be VERY sure that we're stopped
+        # be sure that we're stopped
         if pod_data.acceleration.y_g < 0.1:
-            first_try = _check_pod_is_stopped(pod_data)
-            second_try = _check_pod_is_stopped(pod_data)
-            third_try = _check_pod_is_stopped(pod_data)
-            if first_try and second_try and third_try:
+            if _check_pod_is_stopped(pod_data):
                 break
 
     try:
@@ -38,11 +33,23 @@ def start(pod_data, sql_wrapper, drive_controller):
         logging.error(e)
 
     pod_data.stopped = True
-
+    logging.debug("POD IS STOPPED")
     drive_controller.send_stopped()
 
     while drive_controller.get_response() != constants.STOPPED + "\n":
         drive_controller.send_stopped()
         time.sleep(.1)
 
+    logging.debug("Pod is stopped. Turning off brakes")
+    drive_controller.send_off_main_brakes()
+    while drive_controller.get_response != constants.OFF_BRAKES + "\n":
+        drive_controller.send_off_main_brakes()
+        time.sleep(.1)
+
+    drive_controller.send_off_auxiliary_brakes()
+    while drive_controller.get_response != constants.OFF_AUXILIARY + "\n":
+        drive_controller.send_off_auxiliary_brakes()
+        time.sleep(.1)
+
+    logging.debug("Brakes are both off")
 

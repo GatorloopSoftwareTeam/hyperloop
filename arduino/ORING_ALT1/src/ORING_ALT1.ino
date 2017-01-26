@@ -39,12 +39,12 @@ int pos = 90;
 void setup() {
 
   // Open serial communications and wait for port to open:
-  Serial1.begin(9600);
-  while (!Serial1) {
+  Serial.begin(9600);
+  while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-  Serial1.setTimeout(10);
-  // Serial1.print("Serial for Pi1 initialized\n");
+  Serial.setTimeout(10);
+  // Serial.print("Serial for Pi1 initialized\n");
 
   Serial2.begin(9600);
   while (!Serial2) {
@@ -77,6 +77,9 @@ void setup() {
   pinMode(bldc_direction_left_pin, OUTPUT); // Direction Left
   pinMode(bldc_brake_right_pin, OUTPUT); // Brake Right
   pinMode(bldc_brake_left_pin, OUTPUT); // Brake Left
+
+  digitalWrite(bldc_left_enable_pin, HIGH);
+  digitalWrite(bldc_right_enable_pin, HIGH);
 
   // Clear stopped_flag
   stopped_flag = false;
@@ -165,47 +168,71 @@ void offLinearActuators() {
 }
 
 void goForward() {
-  digitalWrite(bldc_left_enable_pin, HIGH);
-  digitalWrite(bldc_right_enable_pin, HIGH);
-
   digitalWrite(bldc_brake_left_pin, LOW);
   digitalWrite(bldc_brake_right_pin, LOW);
 
   digitalWrite(bldc_direction_left_pin, HIGH);
   digitalWrite(bldc_direction_right_pin, HIGH);
+
+  digitalWrite(bldc_left_enable_pin, LOW);
+  digitalWrite(bldc_right_enable_pin, LOW);
+
+  analogWrite(bldc_pwm_right_pin, 200);
+  analogWrite(bldc_pwm_left_pin, 200);
 }
 
 void goBackward() {
-  digitalWrite(bldc_left_enable_pin, HIGH);
-  digitalWrite(bldc_right_enable_pin, HIGH);
-
   digitalWrite(bldc_brake_left_pin, LOW);
   digitalWrite(bldc_brake_right_pin, LOW);
 
   digitalWrite(bldc_direction_left_pin, LOW);
   digitalWrite(bldc_direction_right_pin, LOW);
+
+  digitalWrite(bldc_left_enable_pin, LOW);
+  digitalWrite(bldc_right_enable_pin, LOW);
+
+  analogWrite(bldc_pwm_right_pin, 200);
+  analogWrite(bldc_pwm_left_pin, 200);
 }
 
 void bldcBrake() {
-  digitalWrite(bldc_left_enable_pin, HIGH);
-  digitalWrite(bldc_right_enable_pin, HIGH);
-
   digitalWrite(bldc_brake_left_pin, HIGH);
   digitalWrite(bldc_brake_right_pin, HIGH);
 
   digitalWrite(bldc_direction_left_pin, LOW);
   digitalWrite(bldc_direction_right_pin, LOW);
+
+  digitalWrite(bldc_left_enable_pin, LOW);
+  digitalWrite(bldc_right_enable_pin, LOW);
+
+  analogWrite(bldc_pwm_right_pin, 0);
+  analogWrite(bldc_pwm_left_pin, 0);
+}
+
+void bldcOff(){
+  digitalWrite(bldc_brake_left_pin, LOW);
+  digitalWrite(bldc_brake_right_pin, LOW);
+
+  digitalWrite(bldc_direction_left_pin, LOW);
+  digitalWrite(bldc_direction_right_pin, LOW);
+
+  digitalWrite(bldc_left_enable_pin, HIGH);
+  digitalWrite(bldc_right_enable_pin, HIGH);
+
+  analogWrite(bldc_pwm_right_pin, 0);
+  analogWrite(bldc_pwm_left_pin, 0);
+
 }
 
 void sendAcknowledgement(String state, int piNumber) {
   if (piNumber == 1){
-    Serial1.print(state);
+    Serial.print(state);
 
   } else if (piNumber == 2) {
     Serial2.print(state);
 
   } else {
-    Serial1.print(state);
+    Serial.print(state);
     Serial2.print(state);
 
   }
@@ -355,6 +382,10 @@ boolean takeActionOnByte(String inByte, int piNumber){
   } else if (inByte == "BK") {
     bldcBrake();
     sendAcknowledgement(inByte + "\n", piNumber);
+  } else if (inByte == "OB") {
+    bldcOff();
+    sendAcknowledgement(inByte + "\n", piNumber);
+
   } else {
     // Handle invalid or empty commands
     if (inByte.length() != 0){
@@ -373,9 +404,9 @@ void loop() {
 
   // Read serial input if available. Each command should end with the
   // asterisk (*) to be able to distinguish them.
-  if (Serial1.available() > 0)
+  if (Serial.available() > 0)
   {
-    pi1InByte = Serial1.readStringUntil('*');
+    pi1InByte = Serial.readStringUntil('*');
   }
 
   if (Serial2.available() > 0) {

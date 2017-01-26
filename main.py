@@ -38,6 +38,8 @@ sql_wrapper = MySQLWrapper(logging)
 thread.start_new_thread(spacex_udp_sender, (pod_data,logging))
 drive_controller = DriveController()
 
+inited_tty = None
+suspension_tcp_socket = None
 try:
     inited_tty, suspension_tcp_socket = states.initialization_state.start(pod_data, sql_wrapper, drive_controller)
 except MySQLdb.OperationalError, e:

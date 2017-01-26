@@ -23,7 +23,7 @@ def init_bms(pod_data, sql_wrapper, logging):
             bms_current_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
 
         # TODO add the correct battery voltages as parameters
-        if constants.LOW_BATTERY < bms_v_val < constants.HIGH_BATTERY and constants.LOW_BATTERY < bms_vs_val < constants.HIGH_BATTERY:
+        if constants.LOW_BATTERY < bms_v_val < constants.HIGH_BATTERY and constants.LOW_BATTERY < bms_vs_val < constants.HIGH_BATTERY and bms_current_val > 0:
             pod_data.v_val = bms_v_val
             pod_data.vs_val = bms_vs_val
             logging.debug("BMS initialized with voltage %d and %d", bms_v_val, bms_vs_val)

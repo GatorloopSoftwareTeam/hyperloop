@@ -40,7 +40,7 @@ def go_backward():
 
 
 def start(pod_data, suspension_tcp_socket, sql_wrapper, drive_controller):
-    sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "DRIVE STATE STARTED"))
+    sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "DRIVE STATE STARTED"))
 
     print "Pod is stopped."
     while True:
@@ -72,6 +72,7 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, drive_controller):
             response = drive_controller.get_response()
             if response != constants.ENGAGE_MAIN_BRAKES:
                 print "Engage main brakes not acknowledged. Got " + response
+            drive_controller.send_off_main_brakes()
         elif choice == 2:
             drive_controller.send_lower_linear_actuators()
             response = drive_controller.get_response()

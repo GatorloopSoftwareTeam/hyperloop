@@ -13,7 +13,6 @@ def get_bms(pod_data, sql_wrapper, logging):
     bms_current_val = 0
     while True:
         bms_recv = sock.recvfrom(1024)[0]
-        print bms_recv
 
         if bms_recv[0:2] == 'V\t':
             bms_v_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))

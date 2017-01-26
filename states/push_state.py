@@ -15,7 +15,7 @@ def start(pod_data, inited_tty, sql_wrapper):
     pod_data.state = constants.STATE_PUSHING
     logging.debug("Now in PUSH state")
     try:
-        sql_wrapper.execute("""INSERT INTO states VALUES ( %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "PUSH STARTED"))
+        sql_wrapper.execute("""INSERT INTO states VALUES (NULL, %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "PUSH STARTED"))
     except MySQLdb.Error, e:
         logging.error("MySQL error in push state: " + str(e))
         pass
@@ -35,14 +35,16 @@ def start(pod_data, inited_tty, sql_wrapper):
 
     if constants.READ_ROOF == 1:
         thread.start_new_thread(getRoofSpeed, (
-            inited_tty["roof"], "roof", constants.NUM_STRIPES_BRAKE, constants.NUM_STRIPES_PANIC, pod_data.acceleration,
+            inited_tty["roof"], "roof", constants.NUM_STRIPES_BRAKE, constants.NUM_STRIPES_PANIC,pod_data, pod_data.acceleration,
             sql_wrapper, logging, q))
 
     # will block until we get the brake command
     q.get()
 
+    logging.debug("Got a brake command")
+
     # do not brake if we are still being pushed
-    while (datetime.datetime.now() - pod_data.push_start_time).total_seconds() > constants.TOTAL_PUSH_TIME:
+    while (datetime.datetime.now() - pod_data.push_start_time).total_seconds() < constants.TOTAL_PUSH_TIME:
         continue
 
-    logging.debug("Got a brake command")
+    logging.debug("Leaving push state")

@@ -50,4 +50,4 @@ class PodData(object):
         if self._state != constants.STATE_FAULT:
             self._state = state
         else:
-            logging.debug("Error: trying to change state from a fault state is not allowed")
+            logging.debug("Error: trying to change state to " + str(state) + ". Changing from a fault state is not allowed")

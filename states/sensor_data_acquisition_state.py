@@ -13,38 +13,52 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
 
     thread.start_new_thread(sensors.get_acc.getAcc, (pod_data, sql_wrapper, logging))
 
-    # Turn suspension on
-    while not pod_data.scu_sus_started:
-        logging.debug("Sending Suspension Start")
-        suspension_tcp_socket.send(constants.start_scu_message_req)
-        time.sleep(.5)
-    while not pod_data.scu_log_started:
-        logging.debug("Sending Logging Start")
-        suspension_tcp_socket.send(constants.start_logging_message_req)
-        time.sleep(.5)
-
     wheel1 = inited_tty["wheel1"]
+    print "Wheel 1 serial open? " + str(wheel1.isOpen())
     wheel1.write(b'r')
-    wheel1_response = wheel1.read(wheel1.inWaiting())
+    time.sleep(1)
+    wheel1_btr = wheel1.inWaiting()
+    logging.debug("Wheel 1 bytes to read = " + str(wheel1_btr))
+    wheel1_response = wheel1.read(wheel1_btr)
     if wheel1_response != constants.LEFT_WHEEL_OK_RESPONSE:
         logging.error("Wheel 1 sensor not OK. Got response: " + wheel1_response)
         pod_data.state = constants.STATE_FAULT
 
     wheel2 = inited_tty["wheel2"]
+    print "Wheel 2 serial open? " + str(wheel2.isOpen())
     wheel2.write(b'r')
-    wheel2_response = wheel2.read(wheel2.inWaiting())
+    time.sleep(1)
+    wheel2_btr = wheel2.inWaiting()
+    logging.debug("Wheel 2 bytes to read = " + str(wheel2_btr))
+    wheel2_response = wheel2.read(wheel2_btr)
     if wheel2_response != constants.RIGHT_WHEEL_OK_RESPONSE:
         logging.error("Wheel 2 sensor not OK. Got response: " + wheel2_response)
         pod_data.state = constants.STATE_FAULT
 
     roof = inited_tty["roof"]
+    print "roof serial open? " + str(roof.isOpen())
     roof.write(b'r')
-    roof_response = roof.read(roof.inWaiting())
+    time.sleep(1)
+    roof_btr = roof.inWaiting()
+    logging.debug("roof bytes to read = " + str(roof_btr))
+    roof_response = roof.read(roof_btr)
     if roof_response != constants.ROOF_OK_RESPONSE:
         logging.error("Roof sensor not OK. Got response: " + roof_response)
         pod_data.state = constants.STATE_FAULT
 
-    thread.start_new_thread(send_suspension_telemetry, (pod_data, logging))
+
+    # Turn suspension on
+    # while not pod_data.scu_sus_started:
+    #     logging.debug("Sending Suspension Start")
+    #     suspension_tcp_socket.send(constants.start_scu_message_req)
+    #     time.sleep(.5)
+    # while not pod_data.scu_log_started:
+    #     logging.debug("Sending Logging Start")
+    #     suspension_tcp_socket.send(constants.start_logging_message_req)
+    #     time.sleep(.5)
+    #
+    # thread.start_new_thread(send_suspension_telemetry, (pod_data, logging))
+
     time.sleep(5)
     if pod_data.state == constants.STATE_FAULT:
         while True:

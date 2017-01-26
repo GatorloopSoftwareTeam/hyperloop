@@ -16,12 +16,10 @@ def start(pod_data, sql_wrapper, drive_controller):
         # Ignore error because we need to keep braking
         logging.error(e)
 
-    drive_controller.send_engage_main_brakes()
+    drive_controller.send_pulse_main_brakes()
 
-    while drive_controller.get_response() != constants.ENGAGE_MAIN_BRAKES + "\n":
-        drive_controller.send_engage_main_brakes()
+    while drive_controller.get_response() != constants.PULSE_MAIN_BRAKES + "\n":
+        drive_controller.send_pulse_main_brakes()
         time.sleep(.1)
 
     logging.debug("BRAKES ENGAGED")
-
-

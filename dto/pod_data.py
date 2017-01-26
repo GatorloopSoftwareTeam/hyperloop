@@ -34,6 +34,7 @@ class PodData(object):
         self.aux_battery_3_temp = 0
         self.pod_temp = 0
 
+        self.sus_inited = False
         self.scu_sus_started_udp = False
         self.scu_sus_started_tcp = False
         self.scu_log_started_tcp=False

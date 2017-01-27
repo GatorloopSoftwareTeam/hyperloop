@@ -33,6 +33,8 @@ boolean stopped_flag = false;
 long brake_release_time = 1.5 * 1000;
 long actuator_active_time = 1.5 * 1000;
 
+long pulse_length = 100;
+
 Servo myservo, myservo2;
 int pos = 90;
 
@@ -105,6 +107,19 @@ void engageMainBrakes() {
 
   digitalWrite(mb1_pwm_pin, HIGH);
   digitalWrite(mb2_pwm_pin, HIGH);
+}
+
+void pulseMainBrakes() {
+  digitalWrite(mb1_dir_pin, LOW);
+  digitalWrite(mb2_dir_pin, LOW);
+
+  digitalWrite(mb1_pwm_pin, HIGH);
+  digitalWrite(mb2_pwm_pin, HIGH);
+
+  time.delay(pulse_length);
+
+  digitalWrite(mb1_pwm_pin, LOW);
+  digitalWrite(mb2_pwm_pin, LOW);
 }
 
 void releaseMainBrakes() {
@@ -286,6 +301,11 @@ boolean takeActionOnByte(String inByte, int piNumber){
   if (inByte == "EM") {
     // Engage Main Brakes
     engageMainBrakes();
+    sendAcknowledgement(inByte + "\n", piNumber);
+
+  if (inByte == "PM") {
+    // Pulse Main Brakes
+    pulseMainBrakes();
     sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte == "EA") {

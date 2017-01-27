@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Servo.h>
+#include "Timer.h"
 
 // Specify pins
 int mb1_dir_pin = 52;
@@ -32,9 +33,18 @@ int bldc_brake_left_pin = 39;
 boolean stopped_flag = false;
 long brake_release_time = 1.5 * 1000;
 long actuator_active_time = 1.5 * 1000;
+long time_to_beam = 2 * 1000;
+
+long pulse_length = 112.5;
+long pulse_period = 1000;
+
+bool main_brakes_engaged = false;
+bool aux_brakes_engaged = false;
 
 Servo myservo, myservo2;
 int pos = 90;
+
+Timer t;
 
 void setup() {
 
@@ -97,14 +107,36 @@ void setup() {
   // int myPrescaler = 2;
   // TCCR1B |= myPrescaler;
   // TCCR0B |= myPrescaler;
+
 }
 
 void engageMainBrakes() {
+  if(main_brakes_engaged) {
+    return;
+  }
+  main_brakes_engaged = true;
   digitalWrite(mb1_dir_pin, LOW);
   digitalWrite(mb2_dir_pin, LOW);
 
   digitalWrite(mb1_pwm_pin, HIGH);
   digitalWrite(mb2_pwm_pin, HIGH);
+
+  t.after(time_to_beam, offMainBrakes);
+}
+
+void endPulseMain() {
+  digitalWrite(mb1_pwm_pin, LOW);
+  digitalWrite(mb2_pwm_pin, LOW);
+}
+
+void pulseMainBrakes() {
+  digitalWrite(mb1_dir_pin, LOW);
+  digitalWrite(mb2_dir_pin, LOW);
+
+  digitalWrite(mb1_pwm_pin, HIGH);
+  digitalWrite(mb2_pwm_pin, HIGH);
+
+  t.after(pulse_length, endPulseMain);
 }
 
 void releaseMainBrakes() {
@@ -121,16 +153,35 @@ void offMainBrakes() {
 
   digitalWrite(mb1_dir_pin, LOW);
   digitalWrite(mb2_dir_pin, LOW);
-
-  delay(1000);
 }
 
 void engageAuxiliaryBrakes() {
+  if(aux_brakes_engaged) {
+    return;
+  }
+  aux_brakes_engaged = true;
   digitalWrite(ab1_dir_pin, LOW);
   digitalWrite(ab2_dir_pin, LOW);
 
   digitalWrite(ab1_pwm_pin, HIGH);
   digitalWrite(ab2_pwm_pin, HIGH);
+
+  t.after(time_to_beam, offAuxiliaryBrakes);
+}
+
+void endPulseAux() {
+  digitalWrite(ab1_pwm_pin, LOW);
+  digitalWrite(ab2_pwm_pin, LOW);
+}
+
+void pulseAuxBrakes() {
+  digitalWrite(ab1_dir_pin, LOW);
+  digitalWrite(ab2_dir_pin, LOW);
+
+  digitalWrite(ab1_pwm_pin, HIGH);
+  digitalWrite(ab2_pwm_pin, HIGH);
+
+  t.after(pulse_length, endPulseAux);
 }
 
 void releaseAuxiliaryBrakes() {
@@ -147,8 +198,6 @@ void offAuxiliaryBrakes() {
 
   digitalWrite(ab1_dir_pin, LOW);
   digitalWrite(ab2_dir_pin, LOW);
-
-  delay(1000);
 }
 
 void lowerLinearActuators() {
@@ -287,7 +336,6 @@ boolean takeActionOnByte(String inByte, int piNumber){
     // Engage Main Brakes
     engageMainBrakes();
     sendAcknowledgement(inByte + "\n", piNumber);
-
   } else if (inByte == "EA") {
     // Engage Auxiliary Brakes
     engageAuxiliaryBrakes();
@@ -299,7 +347,11 @@ boolean takeActionOnByte(String inByte, int piNumber){
     }
     sendAcknowledgement("KILLPOD\n", piNumber);
 
-  }else if (inByte == "RM") {
+  } else if (inByte == "PM") {
+    pulseMainBrakes();
+  } else if (inByte == "PA") {
+    pulseAuxiliaryBrakes();
+  } else if (inByte == "RM") {
     // Release Main Brakes
     if (stopped_flag == true){
       offMainBrakes();
@@ -422,22 +474,23 @@ boolean takeActionOnByte(String inByte, int piNumber){
 }
 
 void loop() {
+  t.update();
   String pi1InByte, pi2InByte;
 
   // Read serial input if available. Each command should end with the
   // asterisk (*) to be able to distinguish them.
-  if (Serial.available() > 0)
-  {
-    pi1InByte = Serial.readStringUntil('*');
-  }
+ if (Serial.available() > 0)
+ {
+   pi1InByte = Serial.readStringUntil('*');
+ }
 
-  if (Serial2.available() > 0) {
-    pi2InByte = Serial2.readStringUntil('*');
-  }
-  if (pi1InByte.length() != 0){
-    takeActionOnByte(pi1InByte, 1);
-  }
-  if (pi2InByte.length() != 0){
-    takeActionOnByte(pi2InByte, 2);
-  }
+ if (Serial2.available() > 0) {
+   pi2InByte = Serial2.readStringUntil('*');
+ }
+ if (pi1InByte.length() != 0){
+   takeActionOnByte(pi1InByte, 1);
+ }
+ if (pi2InByte.length() != 0){
+   takeActionOnByte(pi2InByte, 2);
+ }
 }

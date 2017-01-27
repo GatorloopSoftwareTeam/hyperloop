@@ -48,16 +48,16 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
 
 
     # Turn suspension on
-    # while not pod_data.scu_sus_started:
-    #     logging.debug("Sending Suspension Start")
-    #     suspension_tcp_socket.send(constants.start_scu_message_req)
-    #     time.sleep(.5)
-    # while not pod_data.scu_log_started:
-    #     logging.debug("Sending Logging Start")
-    #     suspension_tcp_socket.send(constants.start_logging_message_req)
-    #     time.sleep(.5)
-    #
-    # thread.start_new_thread(send_suspension_telemetry, (pod_data, logging))
+    while not pod_data.scu_sus_started_tcp and not pod_data.scu_sus_started_udp:
+        logging.debug("Sending Suspension Start")
+        suspension_tcp_socket.send(constants.start_scu_message_req)
+        time.sleep(.5)
+    while not pod_data.scu_log_started:
+        logging.debug("Sending Logging Start")
+        suspension_tcp_socket.send(constants.start_logging_message_req)
+        time.sleep(.5)
+
+    thread.start_new_thread(send_suspension_telemetry, (pod_data, logging))
 
     time.sleep(5)
     if pod_data.state == constants.STATE_FAULT:

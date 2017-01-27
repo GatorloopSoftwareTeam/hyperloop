@@ -87,6 +87,16 @@ void setup() {
   // Init Servo
   myservo.attach(9); // Servo to Pin9
   myservo2.attach(10); // Servo to Pin10
+  myservo.write(90);
+  myservo2.write(90);
+
+  // int myEraser = 7;
+  // TCCR0B &= ~myEraser;
+  // TCCR1B &= ~myEraser;
+  //
+  // int myPrescaler = 2;
+  // TCCR1B |= myPrescaler;
+  // TCCR0B |= myPrescaler;
 }
 
 void engageMainBrakes() {
@@ -177,8 +187,14 @@ void goForward() {
   digitalWrite(bldc_left_enable_pin, LOW);
   digitalWrite(bldc_right_enable_pin, LOW);
 
-  analogWrite(bldc_pwm_right_pin, 200);
-  analogWrite(bldc_pwm_left_pin, 200);
+  analogWrite(bldc_pwm_left_pin, 125);
+  analogWrite(bldc_pwm_right_pin, 125);
+
+  // for (int i=0; i<=125; i=i+5){
+  //   analogWrite(bldc_pwm_right_pin, i);
+  //   analogWrite(bldc_pwm_left_pin, i);
+  //   delayMicroseconds(125);
+  // }
 }
 
 void goBackward() {
@@ -191,8 +207,14 @@ void goBackward() {
   digitalWrite(bldc_left_enable_pin, LOW);
   digitalWrite(bldc_right_enable_pin, LOW);
 
-  analogWrite(bldc_pwm_right_pin, 200);
-  analogWrite(bldc_pwm_left_pin, 200);
+  analogWrite(bldc_pwm_left_pin, 125);
+  analogWrite(bldc_pwm_right_pin, 125);
+
+  // for(int i=0; i<=125; i=i+5){
+  //   analogWrite(bldc_pwm_right_pin, i);
+  //   analogWrite(bldc_pwm_left_pin, i);
+  //   delayMicroseconds(125);
+  // }
 }
 
 void bldcBrake() {

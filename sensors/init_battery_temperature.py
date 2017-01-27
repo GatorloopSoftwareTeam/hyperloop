@@ -1,6 +1,6 @@
 import os
 import glob
-
+import socket
 import constants
 
 os.system('modprobe w1-gpio')
@@ -20,6 +20,14 @@ def _read_temp_raw(device_file):
 def _get_device_path(device_directory):
     return base_dir + device_directory + device_temp_file
 
+def receive_battery_temperature_udp(pod_data, logging):
+    udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    udp_sock.bind(('', constants.MAIN_UDP_BATT_PORT))
+    while True:
+        msg = udp_sock.recv(4096)
+        logging.debug("got a battery temp message of " + msg)
+
+
 
 def init_battery_temperature(pod_data, sql_wrapper, logging):
     m1_file = _get_device_path(constants.MAIN_BATTERY_1)
@@ -29,8 +37,14 @@ def init_battery_temperature(pod_data, sql_wrapper, logging):
     a2_file = _get_device_path(constants.AUX_BATTERY_2)
     a3_file = _get_device_path(constants.AUX_BATTERY_3)
 
-    device_files = [m1_file, m2_file, m3_file, a1_file, a2_file, a3_file]
-    sensor_number = 1
+    if constants.COMPUTER == "main":
+        device_files = [m1_file, m2_file, m3_file] #, a1_file, a2_file, a3_file]
+    else:
+        device_files = [a1_file, a2_file, a3_file]
+    if constants.computer == "main":
+        sensor_number = 1
+    else:
+        sensor_number = 3
     for device_file in device_files:
         initialized = False
         while not initialized:
@@ -50,7 +64,21 @@ def init_battery_temperature(pod_data, sql_wrapper, logging):
                 # checks for a valid temp
                 elif  constants.BATTERY_LOW_TEMP <= formatted_temp_string <= constants.BATTERY_MAX_TEMP:
                     logging.debug("Initialized temp sensor %s with temp %f", (device_file, formatted_temp_string))
+                    if sensor_number == 1:
+                        pod_data.main_battery_1_temp = formatted_temp_string
+                    elif sensor_number == 2:
+                        pod_data.main_battery_2_temp = formatted_temp_string
+                    elif sensor_number == 3:
+                        pod_data.main_battery_3_temp = formatted_temp_string
+                    elif sensor_number == 4:
+                        pod_data.aux_battery_1_temp = formatted_temp_string
+                    elif sensor_number == 5:
+                        pod_data.aux_battery_2_temp = formatted_temp_string
+                    elif sensor_number == 6:
+                        pod_data.aux_battery_3_temp = formatted_temp_string
+                    sensor_number += 1
                     initialized = True
+
                 else:
                     logging.debug("Error reading temp sensor %s, retrying...", (device_file,))
 

@@ -9,6 +9,12 @@ STATE_PUSHING = 3 # optional
 STATE_COAST = 4 # optional
 STATE_BRAKING = 5  # pod is applying brakes
 
+COMPUTER = "main"
+#COMPUTER = "aux"
+MAIN_UDP_BATT_PORT = 4000
+MAIN_UDP_IP = "192.168.0.203"
+AUX_UDP_IP = "192.168.0.205"
+
 
 # Spacex UDP connection info
 SPACEX_UDP_IP = "192.168.0.1"

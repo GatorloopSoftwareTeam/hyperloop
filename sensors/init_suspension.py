@@ -52,7 +52,7 @@ def recieve_suspension_tcp(tcp_sock, pod_data):
                 # We received a successful response
                 pod_data.scu_log_started_tcp = False
 
-def recieve_suspension_udp(pod_data):
+def recieve_suspension_udp(pod_data, logging):
     udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     udp_sock.bind(('',3000))
     while True:
@@ -80,20 +80,23 @@ def recieve_suspension_udp(pod_data):
 
                 if (vcu_udp_received_message[0] == 0x21):
                     vcu_udp_received_message =  struct.unpack_from(constants.network_endinanness+'BBfffffffHH', msg)
-                    print 'SUSPENSION TRAVELS FL: %f FR: %f RL: %f RR: %f X Acc: %f Y Acc:  %f Z Acc:  %f Faults:  %d Status: %d' % vcu_udp_received_message[2:]
-                    # TODO verify these numbers
-                    if vcu_udp_received_message[10] == 0 and vcu_udp_received_message[11] == 4:
+                    #print 'SUSPENSION TRAVELS FL: %f FR: %f RL: %f RR: %f X Acc: %f Y Acc:  %f Z Acc:  %f Faults:  %d Status: %d' % vcu_udp_received_message[2:]
+
+                    #logging.debug(vcu_udp_received_message[9])
+                    #logging.debug(vcu_udp_received_message[10])
+                    if vcu_udp_received_message[9] == 0 and vcu_udp_received_message[10] == 4:
+                        #logging.debug("Got a fault 0 and sus started i think")
                         pod_data.scu_sus_started_udp = True
-                        pod_data.scu_sus_started_udp = True
-                    elif vcu_udp_received_message[10] == 0 and vcu_udp_received_message[11] == 3:
+                    elif vcu_udp_received_message[9] == 0 and vcu_udp_received_message[10] == 3:
+                        #logging.debug("Got a fault 0 and sus stopped i think")
                         pod_data.scu_sus_started_udp = False
-                    #faults is [10]
-                    #status is [11]
+                    #faults is [9]
+                    #status is [10]
                 elif (vcu_udp_received_message[0] == 0x22):
                     vcu_udp_received_message =  struct.unpack_from(constants.network_endinanness+'BBffff', msg)
-                    print 'PAD DISTANCES FL: %f FR Pad: %f RL: %f RR Pad: %f' % vcu_udp_received_message[2:]
+                    #print 'PAD DISTANCES FL: %f FR Pad: %f RL: %f RR Pad: %f' % vcu_udp_received_message[2:]
                 else:
-                    print 'TCP received "%s"' % [hex(ord(c)) for c in vcu_udp_received_message]
+                    print 'UDP received "%s"' % [hex(ord(c)) for c in vcu_udp_received_message]
 
 def init_suspension(pod_data, logging):
     logging.debug("About to init suspension")
@@ -124,12 +127,12 @@ def init_suspension(pod_data, logging):
             t.start()
 
             # Start the listener for udp steam data
-            t = Thread(target=recieve_suspension_udp, args=(pod_data))
+            t = Thread(target=recieve_suspension_udp, args=(pod_data, logging))
             t.start()
 
             logging.debug("Testing starting suspension")
             # Turn the active suspension on
-            tcp_sock.send(constants.start_message_req)
+            tcp_sock.send(constants.start_scu_message_req)
 
             # Wait for the udp stream data that says suspension on
             while pod_data.scu_sus_started_udp == False:
@@ -141,7 +144,7 @@ def init_suspension(pod_data, logging):
 
             # Turn the active suspension off
             logging.debug("Testing stopping suspension")
-            tcp_sock.send(constants.stop_message_req)
+            tcp_sock.send(constants.stop_scu_message_req)
 
             # Wait for the udp stream data that says suspension off
             while pod_data.scu_sus_started_udp == True:

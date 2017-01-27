@@ -118,6 +118,9 @@ heartbeat_message_reply = struct.pack(network_endinanness+'BBH', 0x57, 2, 0)
 
 
 # Brake values
+DISTANCE_TO_BEAM = 15
+IBEAM_WIDTH = 10.8
+BRAKE_ACTUATION_DISTANCE = DISTANCE_TO_BEAM - IBEAM_WIDTH
 TIME_TO_BEAM = 2.0
 """
     End of tube = 4224 ft

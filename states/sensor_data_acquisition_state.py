@@ -52,7 +52,7 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
         logging.debug("Sending Suspension Start")
         suspension_tcp_socket.send(constants.start_scu_message_req)
         time.sleep(.5)
-    while not pod_data.scu_log_started:
+    while not pod_data.scu_log_started_tcp:
         logging.debug("Sending Logging Start")
         suspension_tcp_socket.send(constants.start_logging_message_req)
         time.sleep(.5)

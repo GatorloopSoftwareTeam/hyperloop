@@ -112,3 +112,6 @@ class DriveController:
 
     def send_pulse_auxiliary_brakes(self):
         self.ser.write(PULSE_AUXILIARY_BRAKES)
+
+    def flush_input(self):
+        self.ser.flushInput()

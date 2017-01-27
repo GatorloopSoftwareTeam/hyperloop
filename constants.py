@@ -1,6 +1,9 @@
 import struct
 import sys
 
+
+GRAVITY = 9.80665
+
 # States
 STATE_FAULT = 0  # will cause tube run to abort
 STATE_IDLE = 1  # pod is on, but not ready to be pushed
@@ -116,3 +119,12 @@ heartbeat_message_reply = struct.pack(network_endinanness+'BBH', 0x57, 2, 0)
 
 # Brake values
 TIME_TO_BEAM = 2.0
+"""
+    End of tube = 4224 ft
+    Have to stop = 4124 ft
+    150 ft of margin for error = 4124 - 150 = 3974 ft
+    3974 ft = 1211.275 meters
+"""
+STOPPED_DISTANCE = 1211.275
+EXPECTED_BRAKING_DECELERATION = 1.4
+

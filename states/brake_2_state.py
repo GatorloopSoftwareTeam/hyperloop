@@ -5,16 +5,12 @@ import datetime
 
 
 def start(pod_data, drive_controller, sql_wrapper):
-    initial_time = datetime.datetime.now()
-    # prepare for the worst
-    initial_velocity = max(pod_data.wheel_1_speed, pod_data.wheel_2_speed)
     # 20% of total expected brake time - .1 seconds
     time.sleep(1.81)
     previous_velocity_sample_time = datetime.datetime.now()
     previous_velocity = max(pod_data.wheel_1_speed, pod_data.wheel_2_speed)
     # finish 20% of braking time
     time.sleep(.1)
-    aux_brakes_activated = False
 
     while True:
         if pod_data.stopped:
@@ -22,7 +18,7 @@ def start(pod_data, drive_controller, sql_wrapper):
             break
         measured_velocity = max(pod_data.wheel_1_speed, pod_data.wheel_2_speed)
         calculated_acceleration = \
-            (measured_velocity - previous_velocity)/(datetime.datetime.now() - previous_velocity_sample_time).total_seconds()
+             (measured_velocity - previous_velocity)/(datetime.datetime.now() - previous_velocity_sample_time).total_seconds()
 
         # max is closest to the end of the tube
         measured_distance = max(pod_data.wheel_1_dist, pod_data.wheel_2_dist)

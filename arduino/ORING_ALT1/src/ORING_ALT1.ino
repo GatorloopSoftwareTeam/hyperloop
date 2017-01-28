@@ -33,7 +33,7 @@ int bldc_brake_left_pin = 39;
 boolean stopped_flag = false;
 long brake_release_time = 1.5 * 1000;
 long actuator_active_time = 1.5 * 1000;
-long time_to_beam = 0;
+float time_to_beam = 0;
 
 long pulse_length = 112.5;
 long pulse_period = 1000;
@@ -333,7 +333,7 @@ void kill_switch(){
 
 void setTimeToBrake(float timeToBeam, int piNumber) {
   time_to_beam = timeToBeam;
-  sendAcknowledgement("TTB" + (String)timeToBeam + "\n", piNumber);
+  sendAcknowledgement("TTB" + (String)time_to_beam + "\n", piNumber);
 }
 
 boolean takeActionOnByte(String inByte, int piNumber){

@@ -44,7 +44,8 @@ def start(pod_data, inited_tty, sql_wrapper):
     logging.debug("Got a brake command")
 
     # do not brake if we are still being pushed
-    while (datetime.datetime.now() - pod_data.push_start_time).total_seconds() < constants.TOTAL_PUSH_TIME:
-        continue
+    time_since_push = (datetime.datetime.now() - pod_data.push_start_time)
+    while time_since_push.total_seconds() < constants.TOTAL_PUSH_TIME:
+        logging.debug("Brake requested. Cannot brake for " + str((constants.TOTAL_PUSH_TIME - time_since_push).total_seconds()) + "seconds")
 
-    logging.debug("Leaving push state")
+    logging.debug("We can brake now. Leaving push state")

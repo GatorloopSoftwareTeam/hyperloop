@@ -32,7 +32,7 @@ MYSQL_HOST = "localhost"
 MYSQL_USER = "root"
 MYSQL_PASSWORD = "password"
 MYSQL_DB = "gatorloop"
-TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+TIME_FORMAT = "%Y-%m-%d %T:%f"
 
 # Sensor related
 BMS_PORT = 2001

@@ -2,10 +2,10 @@ import socket
 import logging
 import constants
 import datetime
-import states.emergency_brake_state
+import states.brake_state
 
 
-def start_listener(pod_data):
+def start_listener(pod_data, sql_wrapper, drive_controller):
     server_socket = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)
 
@@ -19,10 +19,13 @@ def start_listener(pod_data):
         if chunk == "EBRAKE\n":
             try:
                 # do not initiate brake until pusher timeout is reached
-                while (datetime.datetime.now() - pod_data.push_start_time).total_seconds() > constants.TOTAL_PUSH_TIME:
-                    continue
+                time_since_push = (datetime.datetime.now() - pod_data.push_start_time)
+                while time_since_push.total_seconds() < constants.TOTAL_PUSH_TIME:
+                    logging.debug("Brake requested. Cannot brake for " + str(
+                        (constants.TOTAL_PUSH_TIME - time_since_push).total_seconds()) + "seconds")
+
                 # initiate emergency brake state
-                states.emergency_brake_state.start()
+                states.brake_state.start(pod_data, sql_wrapper, drive_controller)
                 client_socket.send("EBRAKED\n")
                 logging.info("Pod emergency brake sent")
                 break

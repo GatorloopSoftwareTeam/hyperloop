@@ -116,5 +116,15 @@ class DriveController:
     def flush_input(self):
         self.ser.flushInput()
 
-    def set_time_to_brake(self, seconds):
-        self.ser.write("TTB" + str(seconds) + END_OF_MESSAGE)
+    def set_time_to_brake(self, milliseconds):
+        self.ser.write("TTB" + str(milliseconds) + END_OF_MESSAGE)
+
+    def release_main_for_time(self, seconds):
+        self.send_release_main_brakes()
+        time.sleep(seconds)
+        self.send_off_main_brakes()
+
+    def release_aux_brakes_for_time(self, seconds):
+        self.send_release_auxiliary_brakes()
+        time.sleep(seconds)
+        self.send_off_auxiliary_brakes()

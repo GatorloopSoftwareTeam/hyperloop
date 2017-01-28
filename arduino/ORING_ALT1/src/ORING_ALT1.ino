@@ -331,9 +331,9 @@ void kill_switch(){
   }
 }
 
-void setTimeToBrake(float timeToBeam) {
+void setTimeToBrake(float timeToBeam, int piNumber) {
   time_to_beam = timeToBeam;
-  sendAcknowledgement("TTB" + timeToBeam + "\n")
+  sendAcknowledgement("TTB" + (String)timeToBeam + "\n", piNumber);
 }
 
 boolean takeActionOnByte(String inByte, int piNumber){
@@ -466,7 +466,7 @@ boolean takeActionOnByte(String inByte, int piNumber){
     sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte.substring(0,3) == "TTB") {
-    setTimeToBrake((float)inByte.substring(3));
+    setTimeToBrake(inByte.substring(3).toFloat(), piNumber);
   }
   else {
     // Handle invalid or empty commands

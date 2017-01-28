@@ -36,7 +36,6 @@ long actuator_active_time = 1.5 * 1000;
 float time_to_beam = 0;
 
 long pulse_length = 112.5;
-long pulse_period = 1000;
 
 bool main_brakes_engaged = false;
 bool aux_brakes_engaged = false;

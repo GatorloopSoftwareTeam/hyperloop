@@ -31,6 +31,19 @@ def start(pod_data, sql_wrapper, drive_controller):
     # GPIO for brake 2
     GPIO.setup(27, GPIO.OUT)
 
+    # clear out old data
+    sql_wrapper.execute("""DELETE FROM acc""")
+    sql_wrapper.execute("""DELETE FROM battery_m1_temp""")
+    sql_wrapper.execute("""DELETE FROM battery_m2_temp""")
+    sql_wrapper.execute("""DELETE FROM battery_m3_temp""")
+    sql_wrapper.execute("""DELETE FROM bms""")
+    sql_wrapper.execute("""DELETE FROM calc_acc""")
+    sql_wrapper.execute("""DELETE FROM proc_temp""")
+    sql_wrapper.execute("""DELETE FROM roofspeed""")
+    sql_wrapper.execute("""DELETE FROM states""")
+    sql_wrapper.execute("""DELETE FROM wheel1speed""")
+    sql_wrapper.execute("""DELETE FROM wheel2speed""")
+
     # save initialization state to database
     sql_wrapper.execute("""INSERT INTO states VALUES (NULL, %s, %s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "INITIALIZATION STARTED"))
 

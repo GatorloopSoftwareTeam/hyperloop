@@ -52,7 +52,7 @@ COAST_DETECT = 1
 """
 Minimum Y direction G force that we consider the pod to be in the push state
 """
-MIN_PUSH_ACCELERATION = 0.05
+MIN_PUSH_ACCELERATION = 0
 
 """
 Total time that the pusher is active (in seconds)

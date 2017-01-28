@@ -128,3 +128,13 @@ class DriveController:
         self.send_release_auxiliary_brakes()
         time.sleep(seconds)
         self.send_off_auxiliary_brakes()
+
+    def engage_main_for_time(self, seconds):
+        self.send_engage_main_brakes()
+        time.sleep(seconds)
+        self.send_off_main_brakes()
+
+    def engage_aux_brakes_for_time(self, seconds):
+        self.send_engage_auxiliary_brakes()
+        time.sleep(seconds)
+        self.send_off_auxiliary_brakes()

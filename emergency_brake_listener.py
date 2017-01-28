@@ -30,7 +30,10 @@ def start_listener(pod_data, sql_wrapper, drive_controller):
                 logging.info("Pod emergency brake sent")
                 break
             except socket.error, e:
+                logging.debug("Socket error: " + str(e))
                 client_socket.close()
+                sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""",
+                                    (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
+                pod_data.state = constants.STATE_FAULT
 
-    client_socket.close()
     server_socket.close()

@@ -16,15 +16,20 @@ def get_bms(pod_data, sql_wrapper, logging):
 
         if bms_recv[0:2] == 'V\t':
             bms_v_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
+            pod_data.v_val = bms_v_val
             if bms_v_val < constants.LOW_BATTERY:
                 pod_data.state = constants.STATE_FAULT
 
         elif bms_recv[0:2] == 'VS':
+            pod_data.vs_val = bms_vs_val
             bms_vs_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
+
             if bms_vs_val < constants.LOW_BATTERY:
                 pod_data.state = constants.STATE_FAULT
 
         elif bms_recv[0:1] == 'I':
+
             bms_current_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
+            pod_data.current = bms_current_val
 
         sql_wrapper.execute("INSERT INTO bms VALUES (NULL,%s,%s,%s,%s)", (datetime.datetime.now().strftime(constants.TIME_FORMAT), bms_v_val, bms_vs_val, bms_current_val))

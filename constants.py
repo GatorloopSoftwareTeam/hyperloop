@@ -42,8 +42,8 @@ WHEEL_1_DIST = 0
 WHEEL_2_DIST = 0
 TOTAL_STRIPES = 0
 NUM_STRIPES_BRAKE = 3
-NUM_STRIPES_PANIC = 70
-DIST_BRAKE = 200
+NUM_STRIPES_PANIC = 3
+DIST_BRAKE = 1000
 READ_ROOF = 1
 READ_WHEEL = 1
 READ_ACC = 1
@@ -57,7 +57,7 @@ MIN_PUSH_ACCELERATION = 0
 """
 Total time that the pusher is active (in seconds)
 """
-TOTAL_PUSH_TIME = 4.0
+TOTAL_PUSH_TIME = 60.0
 
 # Amount of time to wait for a speed update to consider that the pod is no longer moving
 SPEED_UPDATE_TIMEDIFF_SEC = 2
@@ -76,7 +76,7 @@ AUX_BATTERY_3 = "28-0316457ef7ff"
 
 # Battery Temp Limits
 BATTERY_MAX_TEMP = 65
-BATTERY_LOW_TEMP = 20
+BATTERY_LOW_TEMP = -20
 
 # Arduino
 OK = "RUOK"
@@ -121,13 +121,14 @@ heartbeat_message_reply = struct.pack(network_endinanness+'BBH', 0x57, 2, 0)
 DISTANCE_TO_BEAM = 15
 IBEAM_WIDTH = 10.8
 ACTUATION_RATIO = 104.4
-TIME_TO_BEAM = 1000
+TIME_TO_BEAM = 1589
 """
     End of tube = 4224 ft
     Have to stop = 4124 ft
     150 ft of margin for error = 4124 - 150 = 3974 ft
     3974 ft = 1211.275 meters
 """
-STOPPED_DISTANCE = 1211.275
+STOPPED_DISTANCE = 2000
 EXPECTED_BRAKING_DECELERATION = 1.4
-
+# interval we check braking ( in seconds )
+BRAKING_SAMPLE_TIME = 0.2

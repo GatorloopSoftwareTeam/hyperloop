@@ -44,7 +44,8 @@ class DriveController:
     def health_check(self):
         self.ser.write(OK)
         response = self.get_response()
-        if response == OK_RESPONSE:
+        if response == OK_RESPONSE + "\n":
+            logging.debug("HEALTHY")
             return True
         else:
             logging.error("RUOK request to drive_controller returned incorrect value: " + response)

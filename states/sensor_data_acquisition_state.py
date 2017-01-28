@@ -17,6 +17,7 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
 
     wheel1 = inited_tty["wheel1"]
     print "Wheel 1 serial open? " + str(wheel1.isOpen())
+    wheel1.flushInput()
     wheel1.write(b'r')
     time.sleep(1)
     wheel1_btr = wheel1.inWaiting()
@@ -30,6 +31,7 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
 
     wheel2 = inited_tty["wheel2"]
     print "Wheel 2 serial open? " + str(wheel2.isOpen())
+    wheel2.flushInput()
     wheel2.write(b'r')
     time.sleep(1)
     wheel2_btr = wheel2.inWaiting()
@@ -41,6 +43,7 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
 
     roof = inited_tty["roof"]
     print "roof serial open? " + str(roof.isOpen())
+    roof.flushInput()
     roof.write(b'r')
     time.sleep(1)
     roof_btr = roof.inWaiting()

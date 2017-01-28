@@ -8,9 +8,7 @@ import MySQLdb
 import states.brake_2_state
 import states.brake_state
 import states.demo_motors_state
-import states.drive_state
 import states.fault_state
-import states.idle_state
 import states.initialization_state
 import states.push_state
 import states.ready_state

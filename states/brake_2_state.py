@@ -23,5 +23,6 @@ def start(pod_data, drive_controller, sql_wrapper):
         else:
             logging.debug("brakes are stopping fine, pod still going")
 
+        time.sleep(.1)
         previous_velocity_sample_time = datetime.datetime.now()
         previous_velocity = max(pod_data.wheel_1_speed, pod_data.wheel_2_speed)

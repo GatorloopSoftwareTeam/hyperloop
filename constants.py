@@ -1,6 +1,9 @@
 import struct
 import sys
 
+
+GRAVITY = 9.80665
+
 # States
 STATE_FAULT = 0  # will cause tube run to abort
 STATE_IDLE = 1  # pod is on, but not ready to be pushed
@@ -94,6 +97,8 @@ RUNNING = "RUNNING"
 STATUS = "STATUS"
 KILL_POD = "KILLPOD"
 BLDC_BRAKE = "BK"
+PULSE_MAIN_BRAKES = "PM"
+PULSE_AUXILIARY_BRAKES = "PA"
 
 # Optical Sensor
 RIGHT_WHEEL_OK_RESPONSE = "imokwr\n"
@@ -113,4 +118,16 @@ heartbeat_message_reply = struct.pack(network_endinanness+'BBH', 0x57, 2, 0)
 
 
 # Brake values
-TIME_TO_BEAM = 2.0
+DISTANCE_TO_BEAM = 15
+IBEAM_WIDTH = 10.8
+ACTUATION_RATIO = 104.4
+TIME_TO_BEAM = ((DISTANCE_TO_BEAM - IBEAM_WIDTH)/2 * ACTUATION_RATIO) * 100
+"""
+    End of tube = 4224 ft
+    Have to stop = 4124 ft
+    150 ft of margin for error = 4124 - 150 = 3974 ft
+    3974 ft = 1211.275 meters
+"""
+STOPPED_DISTANCE = 1211.275
+EXPECTED_BRAKING_DECELERATION = 1.4
+

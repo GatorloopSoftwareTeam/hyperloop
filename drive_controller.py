@@ -22,6 +22,8 @@ KILL_POD = constants.KILL_POD + END_OF_MESSAGE
 RUNNING = constants.RUNNING + END_OF_MESSAGE
 STATUS = constants.STATUS + END_OF_MESSAGE
 BLDC_BRAKE = constants.BLDC_BRAKE + END_OF_MESSAGE
+PULSE_MAIN_BRAKES = constants.PULSE_MAIN_BRAKES + END_OF_MESSAGE
+PULSE_AUXILIARY_BRAKES = constants.PULSE_AUXILIARY_BRAKES + END_OF_MESSAGE
 
 OK_RESPONSE = "IAMOK"
 
@@ -104,3 +106,12 @@ class DriveController:
         response = self.get_response()
         print "Pod status = " + response
         return response
+
+    def send_pulse_main_brakes(self):
+        self.ser.write(PULSE_MAIN_BRAKES)
+
+    def send_pulse_auxiliary_brakes(self):
+        self.ser.write(PULSE_AUXILIARY_BRAKES)
+
+    def flush_input(self):
+        self.ser.flushInput()

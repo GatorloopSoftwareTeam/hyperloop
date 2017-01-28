@@ -23,5 +23,3 @@ def start(pod_data, sql_wrapper, drive_controller):
         time.sleep(.1)
 
     logging.debug("BRAKES ENGAGED")
-
-

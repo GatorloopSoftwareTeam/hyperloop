@@ -2,6 +2,7 @@ import datetime
 import time
 import constants
 import sensors.get_acc
+import sensors.get_calc_acc
 import thread
 from reporters.suspension_telemetry import send_suspension_telemetry
 
@@ -12,6 +13,7 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
         .execute("""INSERT INTO states VALUES (NULL,%s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "SENSOR DATA ACQUISITION STARTED"))
 
     thread.start_new_thread(sensors.get_acc.getAcc, (pod_data, sql_wrapper, logging))
+    thread.start_new_thread(sensors.get_calc_acc.start, (pod_data, sql_wrapper, logging))
 
     wheel1 = inited_tty["wheel1"]
     print "Wheel 1 serial open? " + str(wheel1.isOpen())

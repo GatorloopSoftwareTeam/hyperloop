@@ -23,6 +23,8 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
     if wheel1_response != constants.LEFT_WHEEL_OK_RESPONSE:
         logging.error("Wheel 1 sensor not OK. Got response: " + wheel1_response)
         pod_data.state = constants.STATE_FAULT
+        sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""",
+                            (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
 
     wheel2 = inited_tty["wheel2"]
     print "Wheel 2 serial open? " + str(wheel2.isOpen())
@@ -45,6 +47,8 @@ def start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty):
     if roof_response != constants.ROOF_OK_RESPONSE:
         logging.error("Roof sensor not OK. Got response: " + roof_response)
         pod_data.state = constants.STATE_FAULT
+        sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""",
+                            (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
 
 
     # Turn suspension on

@@ -35,7 +35,8 @@ def _read_temp(device_file, pod_data, sql_wrapper, sensor_number):
             if formatted_temp_string > constants.BATTERY_MAX_TEMP:
                 # bad temp, enter fault state
                 pod_data.state = constants.STATE_FAULT
-                # TODO: save fault state
+                sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""",
+                                    (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
 
             if sensor_number == 1:
                 pod_data.main_battery_1_temp = formatted_temp_string
@@ -49,42 +50,41 @@ def _read_temp(device_file, pod_data, sql_wrapper, sensor_number):
                 pod_data.main_battery_3_temp = formatted_temp_string
                 sql_wrapper.execute("""INSERT INTO battery_m3_temp VALUES (NULL, %s,%s)""",
                                     (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
-            elif sensor_number == 4:
-                pod_data.aux_battery_1_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_a1_temp VALUES (NULL, %s,%s)""",
-                                    (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
-            elif sensor_number == 5:
-                pod_data.aux_battery_2_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_a2_temp VALUES (NULL, %s,%s)""",
-                                    (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
-            elif sensor_number == 6:
-                pod_data.aux_battery_3_temp = formatted_temp_string
-                sql_wrapper.execute("""INSERT INTO battery_a3_temp VALUES (NULL, %s,%s)""",
-                                    (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
+            # elif sensor_number == 4:
+            #     pod_data.aux_battery_1_temp = formatted_temp_string
+            #     sql_wrapper.execute("""INSERT INTO battery_a1_temp VALUES (NULL, %s,%s)""",
+            #                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
+            # elif sensor_number == 5:
+            #     pod_data.aux_battery_2_temp = formatted_temp_string
+            #     sql_wrapper.execute("""INSERT INTO battery_a2_temp VALUES (NULL, %s,%s)""",
+            #                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
+            # elif sensor_number == 6:
+            #     pod_data.aux_battery_3_temp = formatted_temp_string
+            #     sql_wrapper.execute("""INSERT INTO battery_a3_temp VALUES (NULL, %s,%s)""",
+            #                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
 
 
 def get_battery_temperature(pod_data, sql_wrapper, logging):
     logging.debug("Get battery temperature started")
 
-    # TODO: change this back after functional test
-    # m1_file = _get_device_path(constants.MAIN_BATTERY_1)
-    # m2_file = _get_device_path(constants.MAIN_BATTERY_2)
-    # m3_file = _get_device_path(constants.MAIN_BATTERY_3)
+    m1_file = _get_device_path(constants.MAIN_BATTERY_1)
+    m2_file = _get_device_path(constants.MAIN_BATTERY_2)
+    m3_file = _get_device_path(constants.MAIN_BATTERY_3)
     # a1_file = _get_device_path(constants.AUX_BATTERY_1)
     # a2_file = _get_device_path(constants.AUX_BATTERY_2)
     # a3_file = _get_device_path(constants.AUX_BATTERY_3)
     #
-    # thread.start_new_thread(_read_temp, (m1_file, pod_data, sql_wrapper, 1))
-    # thread.start_new_thread(_read_temp, (m2_file, pod_data, sql_wrapper, 2))
-    # thread.start_new_thread(_read_temp, (m3_file, pod_data, sql_wrapper, 3))
+    thread.start_new_thread(_read_temp, (m1_file, pod_data, sql_wrapper, 1))
+    thread.start_new_thread(_read_temp, (m2_file, pod_data, sql_wrapper, 2))
+    thread.start_new_thread(_read_temp, (m3_file, pod_data, sql_wrapper, 3))
     # thread.start_new_thread(_read_temp, (a1_file, pod_data, sql_wrapper, 4))
     # thread.start_new_thread(_read_temp, (a2_file, pod_data, sql_wrapper, 5))
     # thread.start_new_thread(_read_temp, (a3_file, pod_data, sql_wrapper, 6))
 
-    high_temp_file = "/home/pi/highTempFile"
-    low_temp_file = "/home/pi/lowTempFile"
-    reg_temp_file = "/home/pi/regTempFile"
-
-    thread.start_new_thread(_read_temp, (high_temp_file, pod_data, sql_wrapper, 1))
-    thread.start_new_thread(_read_temp, (high_temp_file, pod_data, sql_wrapper, 2))
+    # high_temp_file = "/home/pi/highTempFile"
+    # low_temp_file = "/home/pi/lowTempFile"
+    # reg_temp_file = "/home/pi/regTempFile"
+    #
+    # thread.start_new_thread(_read_temp, (high_temp_file, pod_data, sql_wrapper, 1))
+    # thread.start_new_thread(_read_temp, (high_temp_file, pod_data, sql_wrapper, 2))
 

@@ -84,17 +84,17 @@ def recieve_suspension_udp(pod_data, logging):
                     #logging.debug(vcu_udp_received_message[9])
                     #logging.debug(vcu_udp_received_message[10])
                     if vcu_udp_received_message[9] == 0 and vcu_udp_received_message[10] == 4:
-                        logging.debug("Suspension: No fault and sus started")
+                        # logging.debug("Suspension: No fault and sus started")
                         pod_data.scu_sus_started_udp = True
                     # TODO: make sure the fault code when sus is already started is actually 2
                     elif vcu_udp_received_message[9] == 2 and vcu_udp_received_message[10] == 4:
-                        logging.debug("Suspension: Fault 2 (already started) and sus started")
+                        # logging.debug("Suspension: Fault 2 (already started) and sus started")
                         pod_data.scu_sus_started_udp = True
                     elif vcu_udp_received_message[9] == 0 and vcu_udp_received_message[10] == 3:
-                        logging.debug("Suspension: No fault and sus stopp")
+                        # logging.debug("Suspension: No fault and sus stopp")
                         pod_data.scu_sus_started_udp = False
-                    elif vcu_udp_received_message[9] == 2 and vcu_udp_received_message[10] == 3:
-                        logging.debug("Suspension: Fault 2 (already stopped) and sus stopped")
+                    # elif vcu_udp_received_message[9] == 2 and vcu_udp_received_message[10] == 3:
+                        # logging.debug("Suspension: Fault 2 (already stopped) and sus stopped")
                     #faults is [9]
                     #status is [10]
                 elif (vcu_udp_received_message[0] == 0x22):

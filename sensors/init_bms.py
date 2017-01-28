@@ -33,6 +33,8 @@ def init_bms(pod_data, sql_wrapper, logging):
         elif 1 < bms_v_val <= constants.LOW_BATTERY and 1 < bms_vs_val <= constants.LOW_BATTERY:
             logging.debug("FAULT: BMS initialized with invalid voltage %d and %d" % (bms_v_val, bms_vs_val))
             pod_data.state = constants.STATE_FAULT
+        else:
+            logging.debug("Invalid battery voltage")
 
 
         # bms_recv = int(sock.recvfrom(1024)[0])

@@ -22,19 +22,23 @@ def init_bms(pod_data, sql_wrapper, logging):
         elif bms_recv[0:1] == 'I':
             bms_current_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
 
-        # TODO add the correct battery voltages as parameters
-        if constants.LOW_BATTERY < bms_v_val < constants.HIGH_BATTERY and constants.LOW_BATTERY < bms_vs_val < constants.HIGH_BATTERY and bms_current_val > 0:
-            pod_data.v_val = bms_v_val
-            pod_data.vs_val = bms_vs_val
-            logging.debug("BMS initialized with voltage %d and %d", bms_v_val, bms_vs_val)
-            sql_wrapper.execute("INSERT INTO bms VALUES (NULL,%s,%s,%s,%s)", (datetime.datetime.now().strftime(constants.TIME_FORMAT), bms_v_val, bms_vs_val, bms_current_val))
-            return 1
-        # compare to >1 to make sure it isn't just an uninitialized 0
-        elif 1 < bms_v_val <= constants.LOW_BATTERY and 1 < bms_vs_val <= constants.LOW_BATTERY:
-            logging.debug("FAULT: BMS initialized with invalid voltage %d and %d" % (bms_v_val, bms_vs_val))
-            pod_data.state = constants.STATE_FAULT
-        else:
-            logging.debug("Invalid battery voltage")
+        pod_data.v_val = bms_v_val
+        pod_data.vs_val = bms_vs_val
+
+            # TODO add the correct battery voltages as parameters
+        # if constants.LOW_BATTERY < bms_v_val < constants.HIGH_BATTERY and constants.LOW_BATTERY < bms_vs_val < constants.HIGH_BATTERY and bms_current_val > 0:
+        #     pod_data.v_val = bms_v_val
+        #     pod_data.vs_val = bms_vs_val
+        #     pod_data.current =
+        #     logging.debug("BMS initialized with voltage %d and %d", bms_v_val, bms_vs_val)
+        #     sql_wrapper.execute("INSERT INTO bms VALUES (NULL,%s,%s,%s,%s)", (datetime.datetime.now().strftime(constants.TIME_FORMAT), bms_v_val, bms_vs_val, bms_current_val))
+        #     return 1
+        # # compare to >1 to make sure it isn't just an uninitialized 0
+        # elif 1 < bms_v_val <= constants.LOW_BATTERY and 1 < bms_vs_val <= constants.LOW_BATTERY:
+        #     logging.debug("FAULT: BMS initialized with invalid voltage %d and %d" % (bms_v_val, bms_vs_val))
+        #     pod_data.state = constants.STATE_FAULT
+        # else:
+        #     logging.debug("Invalid battery voltage")
 
 
         # bms_recv = int(sock.recvfrom(1024)[0])

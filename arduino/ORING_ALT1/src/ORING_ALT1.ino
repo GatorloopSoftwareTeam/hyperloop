@@ -33,7 +33,7 @@ int bldc_brake_left_pin = 39;
 boolean stopped_flag = false;
 long brake_release_time = 1.5 * 1000;
 long actuator_active_time = 1.5 * 1000;
-long time_to_beam = 2 * 1000;
+long time_to_beam = 0;
 
 long pulse_length = 112.5;
 long pulse_period = 1000;
@@ -331,6 +331,11 @@ void kill_switch(){
   }
 }
 
+void setTimeToBrake(float timeToBeam) {
+  time_to_beam = timeToBeam;
+  sendAcknowledgement("TTB" + timeToBeam + "\n")
+}
+
 boolean takeActionOnByte(String inByte, int piNumber){
   if (inByte == "EM") {
     // Engage Main Brakes
@@ -460,7 +465,10 @@ boolean takeActionOnByte(String inByte, int piNumber){
     bldcOff();
     sendAcknowledgement(inByte + "\n", piNumber);
 
-  } else {
+  } else if (inByte.substring(0,3) == "TTB") {
+    setTimeToBrake((float)inByte.substring(3));
+  }
+  else {
     // Handle invalid or empty commands
     if (inByte.length() != 0){
         sendAcknowledgement(inByte + " Invalid Command\n", piNumber);

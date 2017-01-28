@@ -59,6 +59,12 @@ def start(pod_data, sql_wrapper, drive_controller):
     thread.start_new_thread(emergency_brake_listener.start_listener, (pod_data,))
     thread.start_new_thread(kill_power_listener.start_listener, ())
 
+    drive_controller.set_time_to_brake(constants.TIME_TO_BEAM)
+    response = drive_controller.get_response()
+    if response != "TTB" + constants.TIME_TO_BEAM + "\n":
+        print response
+        logging.debug("Time to beam not set!")
+
     #if not drive_controller.health_check():
     #    raise RuntimeError("Drive controller health check failed!")
 

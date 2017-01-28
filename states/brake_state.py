@@ -17,9 +17,10 @@ def start(pod_data, sql_wrapper, drive_controller):
         logging.error(e)
 
     drive_controller.send_engage_main_brakes()
-
-    while drive_controller.get_response() != constants.ENGAGE_MAIN_BRAKES + "\n":
-        drive_controller.send_engage_main_brakes()
-        time.sleep(.1)
+    if drive_controller.get_response() != constants.ENGAGE_MAIN_BRAKES + "\n":
+        logging.debug("Primary not engaged")
+    drive_controller.send_engage_auxiliary_brakes()
+    if drive_controller.get_response() != constants.ENGAGE_AUXILIARY_BRAKES + "\n":
+        logging.debug("Auxiliary not engaged")
 
     logging.debug("BRAKES ENGAGED")

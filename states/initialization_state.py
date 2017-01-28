@@ -61,10 +61,10 @@ def start(pod_data, sql_wrapper, drive_controller):
     thread.start_new_thread(get_bms, (pod_data, sql_wrapper, logging))
 
     # make sure modprobe commands have been run to init temp sensors
-    init_battery_temperature(pod_data, sql_wrapper, logging)
-    thread.start_new_thread(get_battery_temperature, (pod_data, sql_wrapper, logging))
-    thread.start_new_thread(receive_battery_temperature_udp, (pod_data, logging))
-    thread.start_new_thread(battery_temp_reporter,(pod_data,logging))
+    #init_battery_temperature(pod_data, sql_wrapper, logging)
+    #thread.start_new_thread(get_battery_temperature, (pod_data, sql_wrapper, logging))
+    #thread.start_new_thread(receive_battery_temperature_udp, (pod_data, logging))
+    #thread.start_new_thread(battery_temp_reporter,(pod_data,logging))
     # send a ping to the suspension unit
     suspension_tcp_socket = init_suspension(pod_data, logging)
 
@@ -74,7 +74,8 @@ def start(pod_data, sql_wrapper, drive_controller):
 
     drive_controller.set_time_to_brake(constants.TIME_TO_BEAM)
     response = drive_controller.get_response()
-    if response != "TTB" + str(constants.TIME_TO_BEAM) + "\n":
+
+    if not str(constants.TIME_TO_BEAM) in response:
         print response
         logging.debug("Time to beam not set!")
 

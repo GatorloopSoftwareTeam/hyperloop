@@ -2,6 +2,7 @@ from lib.mma8451 import MMA8451
 import datetime
 import constants
 import time
+import sys
 
 
 def init_acc(pod_data, sql_wrapper, logging):
@@ -15,16 +16,21 @@ def init_acc(pod_data, sql_wrapper, logging):
 
     if axes['x'] == 0 and axes['y'] == 0 and axes['z'] == 0:
         pod_data.state = constants.STATE_FAULT
+
         sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""",
                             (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
-        logging.debug("Fault: Accelerometer returned all 0s")
+
+        logging.debug("FAULT: Accelerometer returned all 0s")
         time.sleep(1)
-        exit(0)
+        sys.exit(0)
     elif axes['z'] < .9:
         pod_data.state = constants.STATE_FAULT
+
         sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""",
                             (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
-        logging.debug("BAD ACCELEROMETER POSITIONING, MAKE SURE Z IS DOWN AND THE ACC IS FLAT")
+
+        logging.debug("FAULT: BAD ACCELEROMETER POSITIONING, MAKE SURE Z IS DOWN AND THE ACC IS FLAT")
+
     else:
         pod_data.acceleration.x_g = axes['x']
         pod_data.acceleration.y_g = axes['y']

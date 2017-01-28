@@ -6,7 +6,7 @@ import sys
 from threading import Thread
 
 
-def recieve_suspension_tcp(tcp_sock, pod_data):
+def recieve_suspension_tcp(tcp_sock, pod_data, logging):
     while True:
         vcu_tcp_received_message = tcp_sock.recv(1024)
         scu_message_request =  struct.unpack_from(constants.network_endinanness+'BB', vcu_tcp_received_message)
@@ -22,11 +22,11 @@ def recieve_suspension_tcp(tcp_sock, pod_data):
 
         elif (scu_message_request[0] == 0x50): # PING REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BBH', vcu_tcp_received_message)
-            print >>sys.stderr, 'received: PING REPLY \TypeID: %d PayloadLength: %d FW vers: %d' % scu_message_request
+            logging.debug('received: PING REPLY \TypeID: %d PayloadLength: %d FW vers: %d' % scu_message_request)
             
         elif (scu_message_request[0] == 0x51): # START SCU REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BBH', vcu_tcp_received_message)
-            print >>sys.stderr, 'received: START SCU REPLY \TypeID: %d PayloadLength: %d Start Fault %d' % scu_message_request
+            logging.debug('received: START SCU REPLY \TypeID: %d PayloadLength: %d Start Fault %d' % scu_message_request)
             # Check Suspension Response
             if (scu_message_request[2]==0x00):
                 # We received a successful response
@@ -34,20 +34,20 @@ def recieve_suspension_tcp(tcp_sock, pod_data):
 
         elif (scu_message_request[0] == 0x54): # STOP SCU REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BBH', vcu_tcp_received_message)
-            print >>sys.stderr, 'received: STOP SCU REPLY \TypeID: %d PayloadLength: %d Stop Fault %d' % scu_message_request
+            logging.debug('received: STOP SCU REPLY \TypeID: %d PayloadLength: %d Stop Fault %d' % scu_message_request)
             if (scu_message_request[2]==0x00):
                 # We received a successful response
                 pod_data.scu_sus_started_tcp = False
 
         elif (scu_message_request[0] == 0x52): # START LOGGING REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BB8s', vcu_tcp_received_message)
-            print >>sys.stderr, 'received: START LOGGING REPLY \TypeID: %d PayloadLength: %d Filename %s' % scu_message_request
+            logging.debug('received: START LOGGING REPLY \TypeID: %d PayloadLength: %d Filename %s' % scu_message_request)
             pod_data.scu_log_started_tcp = True
 
 
         elif (scu_message_request[0] == 0x53): # STOP LOGGING REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BB8s', vcu_tcp_received_message)
-            print >>sys.stderr, 'received: STOP LOGGING REPLY \TypeID: %d PayloadLength: %d Filename %s' % scu_message_request
+            logging.debug('received: STOP LOGGING REPLY \TypeID: %d PayloadLength: %d Filename %s' % scu_message_request)
             if (scu_message_request[2]==0x00):
                 # We received a successful response
                 pod_data.scu_log_started_tcp = False
@@ -66,12 +66,11 @@ def recieve_suspension_udp(pod_data, logging):
                 #print 'recv timed out, retry later'
                 continue
             else:
-                print e
-                sys.exit(1)
+                logging.debug(e)
         except socket.error, e:
-            # Something else happened, handle error, exit, etc.
-            print e
-            sys.exit(1)
+            # Something else happened
+            logging.debug(e)
+
         else:
             if len(msg) != 0:
                 vcu_udp_received_message =  struct.unpack_from(constants.network_endinanness+'BB', msg)
@@ -85,18 +84,24 @@ def recieve_suspension_udp(pod_data, logging):
                     #logging.debug(vcu_udp_received_message[9])
                     #logging.debug(vcu_udp_received_message[10])
                     if vcu_udp_received_message[9] == 0 and vcu_udp_received_message[10] == 4:
-                        #logging.debug("Got a fault 0 and sus started i think")
+                        logging.debug("Suspension: No fault and sus started")
+                        pod_data.scu_sus_started_udp = True
+                    # TODO: make sure the fault code when sus is already started is actually 2
+                    elif vcu_udp_received_message[9] == 2 and vcu_udp_received_message[10] == 4:
+                        logging.debug("Suspension: Fault 2 (already started) and sus started")
                         pod_data.scu_sus_started_udp = True
                     elif vcu_udp_received_message[9] == 0 and vcu_udp_received_message[10] == 3:
-                        #logging.debug("Got a fault 0 and sus stopped i think")
+                        logging.debug("Suspension: No fault and sus stopp")
                         pod_data.scu_sus_started_udp = False
+                    elif vcu_udp_received_message[9] == 2 and vcu_udp_received_message[10] == 3:
+                        logging.debug("Suspension: Fault 2 (already stopped) and sus stopped")
                     #faults is [9]
                     #status is [10]
                 elif (vcu_udp_received_message[0] == 0x22):
                     vcu_udp_received_message =  struct.unpack_from(constants.network_endinanness+'BBffff', msg)
                     #print 'PAD DISTANCES FL: %f FR Pad: %f RL: %f RR Pad: %f' % vcu_udp_received_message[2:]
                 else:
-                    print 'UDP received "%s"' % [hex(ord(c)) for c in vcu_udp_received_message]
+                    logging.debug("Suspension: UDP Weird Message")
 
 def init_suspension(pod_data, logging):
     logging.debug("About to init suspension")
@@ -113,17 +118,17 @@ def init_suspension(pod_data, logging):
         # Get ping response
         vcu_tcp_received_message = tcp_sock.recv(1024)
         scu_message_request =  struct.unpack_from(constants.network_endinanness+'BB', vcu_tcp_received_message)
-        print >>sys.stderr, 'TCP received "%s"' % [hex(ord(c)) for c in vcu_tcp_received_message]
-        print >>sys.stderr, 'TCP received length of TCP datagram "%s"' % len(scu_message_request)
+        logging.debug('TCP received "%s"' % (scu_message_request[0],))
+        # print >>sys.stderr, 'TCP received length of TCP datagram "%s"' % len(scu_message_request)
 
         # If ping replies successfully
         if (scu_message_request[0] == 0x50):
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BBH', vcu_tcp_received_message)
-            print >>sys.stderr, 'received: PING REPLY \TypeID: %d PayloadLength: %d FW vers: %d' % scu_message_request
+            #print >>sys.stderr, 'received: PING REPLY \TypeID: %d PayloadLength: %d FW vers: %d' % scu_message_request
             logging.debug("Suspension successfully replied to ping")
 
             # Start the listener for tcp replies
-            t = Thread(target=recieve_suspension_tcp, args=(tcp_sock, pod_data))
+            t = Thread(target=recieve_suspension_tcp, args=(tcp_sock, pod_data, logging))
             t.start()
 
             # Start the listener for udp steam data
@@ -156,10 +161,6 @@ def init_suspension(pod_data, logging):
             logging.debug("Suspension functionality has passed full test")
             pod_data.sus_inited = True
 
-            #while pod_data.sus_inited == False:
-            #    time.sleep(1)
-            #    continue
-            #sus_inited=True
             return tcp_sock
         else:
             logging.debug("Suspension sent something else")

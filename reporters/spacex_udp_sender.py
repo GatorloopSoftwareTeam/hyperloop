@@ -9,7 +9,7 @@ def spacex_udp_sender(pod_data, logging):
         # send state via udp socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
 
-        pod_data_str = struct.pack('!BBi7I', pod_data.team_id, pod_data.state, pod_data.acceleration.y_g, pod_data.wheel_1_dist, pod_data.wheel_1_speed, pod_data.v_val, pod_data.current, pod_data.main_battery_1_temp, pod_data.pod_temp, pod_data.num_stripes_passed)
+        pod_data_str = struct.pack('!BBi7I', pod_data.team_id, pod_data.state, int(pod_data.acceleration.y_g*1000), int(pod_data.wheel_1_dist), int(pod_data.wheel_1_speed*100), int(pod_data.v_val*0.447*100), int(pod_data.current), int(pod_data.main_battery_1_temp), 0, pod_data.num_stripes_passed)
         #print pod_data_str
         #pod_data_str = pod_data.to_str()
         #logging.debug("sending a state message to spacex: " + pod_data_str)

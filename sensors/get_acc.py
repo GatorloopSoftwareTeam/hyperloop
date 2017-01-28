@@ -1,16 +1,17 @@
 from lib.mma8451 import MMA8451
 import datetime
 import constants
+from sys import exit
 
 
 def getAcc(pod_data, sql_wrapper, logging):
     acc = MMA8451()
 
-    # init
-    # TODO: move this into init
+    # read acc data
     axes = acc.get_axes_measurement()
     if axes['z'] < .9:
         logging.debug("BAD ACCELEROMETER POSITIONING, MAKE SURE Z IS DOWN AND THE ACC IS FLAT")
+        # TODO: Maybe throw a fault state
     while True:
         axes = acc.get_axes_measurement()
         pod_data.acceleration.x_g = axes['x']

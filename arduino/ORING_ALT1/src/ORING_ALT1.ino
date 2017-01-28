@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Servo.h>
+#include "Timer.h"
 
 // Specify pins
 int mb1_dir_pin = 52;
@@ -32,26 +33,35 @@ int bldc_brake_left_pin = 39;
 boolean stopped_flag = false;
 long brake_release_time = 1.5 * 1000;
 long actuator_active_time = 1.5 * 1000;
+long time_to_beam = 2 * 1000;
+
+long pulse_length = 112.5;
+long pulse_period = 1000;
+
+bool main_brakes_engaged = false;
+bool aux_brakes_engaged = false;
 
 Servo myservo, myservo2;
 int pos = 90;
 
+Timer t;
+
 void setup() {
 
   // Open serial communications and wait for port to open:
-  Serial1.begin(9600);
-  while (!Serial1) {
+  Serial.begin(9600);
+  while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-  Serial1.setTimeout(10);
-  Serial1.print("Serial for Pi1 initialized\n");
+  Serial.setTimeout(10);
+  // Serial.print("Serial for Pi1 initialized\n");
 
   Serial2.begin(9600);
   while (!Serial2) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   Serial2.setTimeout(10);
-  Serial2.print("Serial for Pi2 initialized\n");
+  // Serial2.print("Serial for Pi2 initialized\n");
 
   // Set pin directions
   pinMode(mb1_dir_pin, OUTPUT);
@@ -78,20 +88,55 @@ void setup() {
   pinMode(bldc_brake_right_pin, OUTPUT); // Brake Right
   pinMode(bldc_brake_left_pin, OUTPUT); // Brake Left
 
+  digitalWrite(bldc_left_enable_pin, HIGH);
+  digitalWrite(bldc_right_enable_pin, HIGH);
+
   // Clear stopped_flag
   stopped_flag = false;
 
   // Init Servo
   myservo.attach(9); // Servo to Pin9
-  myservo2.attach(10); // Servo to Pin9
+  myservo2.attach(10); // Servo to Pin10
+  myservo.write(90);
+  myservo2.write(90);
+
+  // int myEraser = 7;
+  // TCCR0B &= ~myEraser;
+  // TCCR1B &= ~myEraser;
+  //
+  // int myPrescaler = 2;
+  // TCCR1B |= myPrescaler;
+  // TCCR0B |= myPrescaler;
+
 }
 
 void engageMainBrakes() {
+  if(main_brakes_engaged) {
+    return;
+  }
+  main_brakes_engaged = true;
   digitalWrite(mb1_dir_pin, LOW);
   digitalWrite(mb2_dir_pin, LOW);
 
   digitalWrite(mb1_pwm_pin, HIGH);
   digitalWrite(mb2_pwm_pin, HIGH);
+
+  t.after(time_to_beam, offMainBrakes);
+}
+
+void endPulseMain() {
+  digitalWrite(mb1_pwm_pin, LOW);
+  digitalWrite(mb2_pwm_pin, LOW);
+}
+
+void pulseMainBrakes() {
+  digitalWrite(mb1_dir_pin, LOW);
+  digitalWrite(mb2_dir_pin, LOW);
+
+  digitalWrite(mb1_pwm_pin, HIGH);
+  digitalWrite(mb2_pwm_pin, HIGH);
+
+  t.after(pulse_length, endPulseMain);
 }
 
 void releaseMainBrakes() {
@@ -108,16 +153,35 @@ void offMainBrakes() {
 
   digitalWrite(mb1_dir_pin, LOW);
   digitalWrite(mb2_dir_pin, LOW);
-
-  delay(1000);
 }
 
 void engageAuxiliaryBrakes() {
+  if(aux_brakes_engaged) {
+    return;
+  }
+  aux_brakes_engaged = true;
   digitalWrite(ab1_dir_pin, LOW);
   digitalWrite(ab2_dir_pin, LOW);
 
   digitalWrite(ab1_pwm_pin, HIGH);
   digitalWrite(ab2_pwm_pin, HIGH);
+
+  t.after(time_to_beam, offAuxiliaryBrakes);
+}
+
+void endPulseAux() {
+  digitalWrite(ab1_pwm_pin, LOW);
+  digitalWrite(ab2_pwm_pin, LOW);
+}
+
+void pulseAuxBrakes() {
+  digitalWrite(ab1_dir_pin, LOW);
+  digitalWrite(ab2_dir_pin, LOW);
+
+  digitalWrite(ab1_pwm_pin, HIGH);
+  digitalWrite(ab2_pwm_pin, HIGH);
+
+  t.after(pulse_length, endPulseAux);
 }
 
 void releaseAuxiliaryBrakes() {
@@ -134,8 +198,6 @@ void offAuxiliaryBrakes() {
 
   digitalWrite(ab1_dir_pin, LOW);
   digitalWrite(ab2_dir_pin, LOW);
-
-  delay(1000);
 }
 
 void lowerLinearActuators() {
@@ -165,47 +227,83 @@ void offLinearActuators() {
 }
 
 void goForward() {
-  digitalWrite(bldc_left_enable_pin, HIGH);
-  digitalWrite(bldc_right_enable_pin, HIGH);
+  digitalWrite(bldc_brake_left_pin, LOW);
+  digitalWrite(bldc_brake_right_pin, LOW);
 
-  digitalWrite(bldc_left_brake_pin, LOW);
-  digitalWrite(bldc_right_brake_pin, LOW);
+  digitalWrite(bldc_direction_left_pin, HIGH);
+  digitalWrite(bldc_direction_right_pin, HIGH);
 
-  digitalWrite(bldc_left_direction_pin, HIGH);
-  digitalWrite(bldc_right_direction_pin, HIGH);
+  digitalWrite(bldc_left_enable_pin, LOW);
+  digitalWrite(bldc_right_enable_pin, LOW);
+
+  analogWrite(bldc_pwm_left_pin, 125);
+  analogWrite(bldc_pwm_right_pin, 125);
+
+  // for (int i=0; i<=125; i=i+5){
+  //   analogWrite(bldc_pwm_right_pin, i);
+  //   analogWrite(bldc_pwm_left_pin, i);
+  //   delayMicroseconds(125);
+  // }
 }
 
 void goBackward() {
-  digitalWrite(bldc_left_enable_pin, HIGH);
-  digitalWrite(bldc_right_enable_pin, HIGH);
+  digitalWrite(bldc_brake_left_pin, LOW);
+  digitalWrite(bldc_brake_right_pin, LOW);
 
-  digitalWrite(bldc_left_brake_pin, LOW);
-  digitalWrite(bldc_right_brake_pin, LOW);
+  digitalWrite(bldc_direction_left_pin, LOW);
+  digitalWrite(bldc_direction_right_pin, LOW);
 
-  digitalWrite(bldc_left_direction_pin, LOW);
-  digitalWrite(bldc_right_direction_pin, LOW);
+  digitalWrite(bldc_left_enable_pin, LOW);
+  digitalWrite(bldc_right_enable_pin, LOW);
+
+  analogWrite(bldc_pwm_left_pin, 125);
+  analogWrite(bldc_pwm_right_pin, 125);
+
+  // for(int i=0; i<=125; i=i+5){
+  //   analogWrite(bldc_pwm_right_pin, i);
+  //   analogWrite(bldc_pwm_left_pin, i);
+  //   delayMicroseconds(125);
+  // }
 }
 
 void bldcBrake() {
+  digitalWrite(bldc_brake_left_pin, HIGH);
+  digitalWrite(bldc_brake_right_pin, HIGH);
+
+  digitalWrite(bldc_direction_left_pin, LOW);
+  digitalWrite(bldc_direction_right_pin, LOW);
+
+  digitalWrite(bldc_left_enable_pin, LOW);
+  digitalWrite(bldc_right_enable_pin, LOW);
+
+  analogWrite(bldc_pwm_right_pin, 0);
+  analogWrite(bldc_pwm_left_pin, 0);
+}
+
+void bldcOff(){
+  digitalWrite(bldc_brake_left_pin, LOW);
+  digitalWrite(bldc_brake_right_pin, LOW);
+
+  digitalWrite(bldc_direction_left_pin, LOW);
+  digitalWrite(bldc_direction_right_pin, LOW);
+
   digitalWrite(bldc_left_enable_pin, HIGH);
   digitalWrite(bldc_right_enable_pin, HIGH);
 
-  digitalWrite(bldc_left_brake_pin, HIGH);
-  digitalWrite(bldc_right_brake_pin, HIGH);
+  analogWrite(bldc_pwm_right_pin, 0);
+  analogWrite(bldc_pwm_left_pin, 0);
 
-  digitalWrite(bldc_left_direction_pin, LOW);
-  digitalWrite(bldc_right_direction_pin, LOW);
 }
 
 void sendAcknowledgement(String state, int piNumber) {
   if (piNumber == 1){
-    Serial1.print(state);
+    Serial.print(state);
 
   } else if (piNumber == 2) {
     Serial2.print(state);
 
   } else {
-    Serial1.print(state);
+    Serial.print(state);
     Serial2.print(state);
 
   }
@@ -226,7 +324,7 @@ void kill_switch(){
     myservo2.write(pos);
     delay(30);                       // waits 15ms for the servo to reach the position
   }
-  for (pos = 180; pos >= 90; pos -= 10) { // goes from 180 degrees to 0 degrees
+  for (pos = 90; pos >= 0; pos -= 10) { // goes from 180 degrees to 0 degrees
     myservo.write(pos);              // tell servo to go to position in variable 'pos'
     myservo2.write(pos);
     delay(30);                       // waits 15ms for the servo to reach the position
@@ -238,7 +336,6 @@ boolean takeActionOnByte(String inByte, int piNumber){
     // Engage Main Brakes
     engageMainBrakes();
     sendAcknowledgement(inByte + "\n", piNumber);
-
   } else if (inByte == "EA") {
     // Engage Auxiliary Brakes
     engageAuxiliaryBrakes();
@@ -250,7 +347,11 @@ boolean takeActionOnByte(String inByte, int piNumber){
     }
     sendAcknowledgement("KILLPOD\n", piNumber);
 
-  }else if (inByte == "RM") {
+  } else if (inByte == "PM") {
+    pulseMainBrakes();
+  } else if (inByte == "PA") {
+    pulseAuxiliaryBrakes();
+  } else if (inByte == "RM") {
     // Release Main Brakes
     if (stopped_flag == true){
       offMainBrakes();
@@ -355,6 +456,10 @@ boolean takeActionOnByte(String inByte, int piNumber){
   } else if (inByte == "BK") {
     bldcBrake();
     sendAcknowledgement(inByte + "\n", piNumber);
+  } else if (inByte == "OB") {
+    bldcOff();
+    sendAcknowledgement(inByte + "\n", piNumber);
+
   } else {
     // Handle invalid or empty commands
     if (inByte.length() != 0){
@@ -369,22 +474,23 @@ boolean takeActionOnByte(String inByte, int piNumber){
 }
 
 void loop() {
+  t.update();
   String pi1InByte, pi2InByte;
 
   // Read serial input if available. Each command should end with the
   // asterisk (*) to be able to distinguish them.
-  if (Serial1.available() > 0)
-  {
-    pi1InByte = Serial1.readStringUntil('*');
-  }
+ if (Serial.available() > 0)
+ {
+   pi1InByte = Serial.readStringUntil('*');
+ }
 
-  if (Serial2.available() > 0) {
-    pi2InByte = Serial2.readStringUntil('*');
-  }
-  if (pi1InByte.length() != 0){
-    takeActionOnByte(pi1InByte, 1);
-  }
-  if (pi2InByte.length() != 0){
-    takeActionOnByte(pi2InByte, 2);
-  }
+ if (Serial2.available() > 0) {
+   pi2InByte = Serial2.readStringUntil('*');
+ }
+ if (pi1InByte.length() != 0){
+   takeActionOnByte(pi1InByte, 1);
+ }
+ if (pi2InByte.length() != 0){
+   takeActionOnByte(pi2InByte, 2);
+ }
 }

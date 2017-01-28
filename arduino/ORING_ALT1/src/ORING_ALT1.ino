@@ -42,7 +42,7 @@ bool main_brakes_engaged = false;
 bool aux_brakes_engaged = false;
 
 Servo myservo, myservo2;
-int pos = 180;
+int pos = 90;
 
 Timer t;
 
@@ -319,11 +319,11 @@ void sendStatus(int piNumber){
 }
 
 void kill_switch(){
-  for (pos = 180; pos >= 40; pos -= 1) { // goes from 90 degrees to 270 degrees
+  for (pos = 90; pos <= 180 ; pos += 1) { // goes from 90 degrees to 270 degrees
     // in steps of 1 degree
     myservo.write(pos);              // tell servo to go to position in variable 'pos'
     myservo2.write(pos);
-    delay(15);                       // waits 15ms for the servo to reach the position
+    delay(1);                       // waits 15ms for the servo to reach the position
   }
   // for (pos = 90; pos >= 0; pos -= 10) { // goes from 180 degrees to 0 degrees
   //   myservo.write(pos);              // tell servo to go to position in variable 'pos'

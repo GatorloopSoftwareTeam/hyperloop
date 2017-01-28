@@ -1,6 +1,8 @@
 import socket
 import sys
 import struct
+import time
+
 
 port=3000
 ip='192.168.0.10'

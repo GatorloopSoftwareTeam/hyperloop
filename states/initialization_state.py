@@ -61,7 +61,7 @@ def start(pod_data, sql_wrapper, drive_controller):
 
     drive_controller.set_time_to_brake(constants.TIME_TO_BEAM)
     response = drive_controller.get_response()
-    if response != "TTB" + constants.TIME_TO_BEAM + "\n":
+    if response != "TTB" + str(constants.TIME_TO_BEAM) + "\n":
         print response
         logging.debug("Time to beam not set!")
 

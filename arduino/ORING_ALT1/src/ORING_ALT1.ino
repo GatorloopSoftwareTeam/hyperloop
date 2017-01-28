@@ -42,7 +42,7 @@ bool main_brakes_engaged = false;
 bool aux_brakes_engaged = false;
 
 Servo myservo, myservo2;
-int pos = 90;
+int pos = 180;
 
 Timer t;
 
@@ -97,9 +97,10 @@ void setup() {
   // Init Servo
   myservo.attach(9); // Servo to Pin9
   myservo2.attach(10); // Servo to Pin10
-  myservo.write(90);
-  myservo2.write(90);
+  myservo.write(pos);
+  myservo2.write(pos);
 
+  // Timer changes for BLDC motors (untested)
   // int myEraser = 7;
   // TCCR0B &= ~myEraser;
   // TCCR1B &= ~myEraser;
@@ -318,17 +319,17 @@ void sendStatus(int piNumber){
 }
 
 void kill_switch(){
-  for (pos = 90; pos <= 300; pos += 10) { // goes from 90 degrees to 270 degrees
+  for (pos = 180; pos >= 40; pos -= 1) { // goes from 90 degrees to 270 degrees
     // in steps of 1 degree
     myservo.write(pos);              // tell servo to go to position in variable 'pos'
     myservo2.write(pos);
-    delay(30);                       // waits 15ms for the servo to reach the position
+    delay(15);                       // waits 15ms for the servo to reach the position
   }
-  for (pos = 90; pos >= 0; pos -= 10) { // goes from 180 degrees to 0 degrees
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    myservo2.write(pos);
-    delay(30);                       // waits 15ms for the servo to reach the position
-  }
+  // for (pos = 90; pos >= 0; pos -= 10) { // goes from 180 degrees to 0 degrees
+  //   myservo.write(pos);              // tell servo to go to position in variable 'pos'
+  //   myservo2.write(pos);
+  //   delay(30);                       // waits 15ms for the servo to reach the position
+  // }
 }
 
 void setTimeToBrake(float timeToBeam, int piNumber) {

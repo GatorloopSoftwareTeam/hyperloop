@@ -350,7 +350,7 @@ boolean takeActionOnByte(String inByte, int piNumber){
   } else if (inByte == "PM") {
     pulseMainBrakes();
   } else if (inByte == "PA") {
-    pulseAuxiliaryBrakes();
+    pulseAuxBrakes();
   } else if (inByte == "RM") {
     // Release Main Brakes
     if (stopped_flag == true){

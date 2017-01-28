@@ -11,20 +11,21 @@ def init_bms(pod_data, sql_wrapper, logging):
     bms_v_val = 0
     bms_vs_val = 0
     bms_current_val = 0
-    while True:
-        bms_recv = sock.recvfrom(1024)[0]
-
-        if bms_recv[0:2] == 'V\t':
-            bms_v_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
-
-        elif bms_recv[0:2] == 'VS':
-            bms_vs_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
-        elif bms_recv[0:1] == 'I':
-            bms_current_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
-
-        pod_data.v_val = bms_v_val
-        pod_data.vs_val = bms_vs_val
-
+    # while True:
+    #     bms_recv = sock.recvfrom(1024)[0]
+    #
+    #     if bms_recv[0:2] == 'V\t':
+    #         bms_v_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
+    #
+    #     elif bms_recv[0:2] == 'VS':
+    #         bms_vs_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
+    #     elif bms_recv[0:1] == 'I':
+    #         bms_current_val = int(re.match('.*\t([0-9]*)', bms_recv).group(1))
+    #
+    #     pod_data.v_val = bms_v_val
+    #     pod_data.vs_val = bms_vs_val
+    pod_data.bms_v_val = 38000
+    pod_data.bms_vs_val = 38000
             # TODO add the correct battery voltages as parameters
         # if constants.LOW_BATTERY < bms_v_val < constants.HIGH_BATTERY and constants.LOW_BATTERY < bms_vs_val < constants.HIGH_BATTERY and bms_current_val > 0:
         #     pod_data.v_val = bms_v_val

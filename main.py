@@ -52,16 +52,20 @@ ready_listener.start_listener(pod_data, sql_wrapper)
 states.sensor_data_acquisition_state.start(pod_data, suspension_tcp_socket, sql_wrapper, logging, inited_tty)
 states.ready_state.start(pod_data, sql_wrapper)
 
-try:
-    states.push_state.start(pod_data, inited_tty, sql_wrapper)
-except MySQLdb.OperationalError, e:
-    # figure out what to do here
-    # TODO: WRONG!!!!
-    pass
-
-states.brake_state.start(pod_data, sql_wrapper, drive_controller)
-thread.start_new_thread(states.wait_for_pod_to_stop_state.start, (pod_data, sql_wrapper, drive_controller))
-states.brake_2_state.start(pod_data, drive_controller, sql_wrapper)
+logging.debug("exited ready state. Infinite looping")
+while True:
+    time.sleep(2)
+# TODO: uncomment after vacuum test
+# try:
+#     states.push_state.start(pod_data, inited_tty, sql_wrapper)
+# except MySQLdb.OperationalError, e:
+#     # figure out what to do here
+#     # TODO: WRONG!!!!
+#     pass
+#
+# states.brake_state.start(pod_data, sql_wrapper, drive_controller)
+# thread.start_new_thread(states.wait_for_pod_to_stop_state.start, (pod_data, sql_wrapper, drive_controller))
+# states.brake_2_state.start(pod_data, drive_controller, sql_wrapper)
 
 
 

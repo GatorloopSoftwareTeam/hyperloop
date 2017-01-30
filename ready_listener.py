@@ -1,10 +1,9 @@
 import socket
-import logging
-from states import ready_state
-from drive_controller import DriveController
+import constants
+import datetime
 
 
-def start_listener(pod_data, sql_wrapper):
+def start_listener(logging, pod_data, sql_wrapper):
     logging.debug("LISTENING FOR READY")
     server_socket = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)
@@ -18,13 +17,14 @@ def start_listener(pod_data, sql_wrapper):
         chunk = client_socket.recv(7)
         if chunk == "READY\n":
             try:
-                # stop the pod
                 client_socket.send("READY\n")
                 logging.info("Move to ready signal received")
                 break
             except socket.error, e:
+                logging.debug("Socket error: " + str(e))
                 client_socket.close()
+                sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""",
+                                    (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
+                pod_data.state = constants.STATE_FAULT
 
-    client_socket.close()
     server_socket.close()
-    ready_state.start(pod_data, sql_wrapper)

@@ -5,6 +5,7 @@ from sys import exit
 
 
 def getAcc(pod_data, sql_wrapper, logging):
+    logging.debug("Started getting acc data")
     acc = MMA8451()
 
     # read acc data

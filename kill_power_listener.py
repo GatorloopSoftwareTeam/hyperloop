@@ -1,9 +1,11 @@
 import socket
 import logging
+import datetime
+import constants
 from drive_controller import DriveController
 
 
-def start_listener():
+def start_listener(pod_data, sql_wrapper):
     server_socket = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)
 
@@ -23,7 +25,11 @@ def start_listener():
                 logging.info("Pod kill power sent")
                 break
             except socket.error, e:
+                logging.debug("Socket error: " + str(e))
                 client_socket.close()
+                sql_wrapper.execute("""INSERT INTO states VALUES (NULL,%s,%s)""",
+                                    (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
+                pod_data.state = constants.STATE_FAULT
 
     client_socket.close()
     server_socket.close()

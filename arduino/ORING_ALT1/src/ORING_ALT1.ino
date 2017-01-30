@@ -31,14 +31,15 @@ int bldc_brake_right_pin = 38;
 int bldc_brake_left_pin = 39;
 
 boolean stopped_flag = false;
-long brake_release_time = 1.5 * 1000;
 long actuator_active_time = 1.5 * 1000;
 float time_to_beam = 0;
 
-long pulse_length = 112.5;
+long pulse_length = 28.125;
 
 bool main_brakes_engaged = false;
 bool aux_brakes_engaged = false;
+bool main_brakes_engaging = true;
+bool aux_brakes_engaging = false;
 
 Servo myservo, myservo2;
 int pos = 90;
@@ -96,9 +97,10 @@ void setup() {
   // Init Servo
   myservo.attach(9); // Servo to Pin9
   myservo2.attach(10); // Servo to Pin10
-  myservo.write(90);
-  myservo2.write(90);
+  myservo.write(pos);
+  myservo2.write(pos);
 
+  // Timer changes for BLDC motors (untested)
   // int myEraser = 7;
   // TCCR0B &= ~myEraser;
   // TCCR1B &= ~myEraser;
@@ -113,6 +115,7 @@ void engageMainBrakes() {
   if(main_brakes_engaged) {
     return;
   }
+  main_brakes_engaging = true;
   main_brakes_engaged = true;
   digitalWrite(mb1_dir_pin, LOW);
   digitalWrite(mb2_dir_pin, LOW);
@@ -152,12 +155,14 @@ void offMainBrakes() {
 
   digitalWrite(mb1_dir_pin, LOW);
   digitalWrite(mb2_dir_pin, LOW);
+  main_brakes_engaging = false;
 }
 
 void engageAuxiliaryBrakes() {
   if(aux_brakes_engaged) {
     return;
   }
+  aux_brakes_engaging = true;
   aux_brakes_engaged = true;
   digitalWrite(ab1_dir_pin, LOW);
   digitalWrite(ab2_dir_pin, LOW);
@@ -197,6 +202,7 @@ void offAuxiliaryBrakes() {
 
   digitalWrite(ab1_dir_pin, LOW);
   digitalWrite(ab2_dir_pin, LOW);
+  aux_brakes_engaging = false;
 }
 
 void lowerLinearActuators() {
@@ -317,21 +323,23 @@ void sendStatus(int piNumber){
 }
 
 void kill_switch(){
-  for (pos = 90; pos <= 300; pos += 10) { // goes from 90 degrees to 270 degrees
+  for (pos = 90; pos <= 180 ; pos += 1) { // goes from 90 degrees to 270 degrees
     // in steps of 1 degree
     myservo.write(pos);              // tell servo to go to position in variable 'pos'
     myservo2.write(pos);
-    delay(30);                       // waits 15ms for the servo to reach the position
+    delay(1);                       // waits 15ms for the servo to reach the position
   }
-  for (pos = 90; pos >= 0; pos -= 10) { // goes from 180 degrees to 0 degrees
-    myservo.write(pos);              // tell servo to go to position in variable 'pos'
-    myservo2.write(pos);
-    delay(30);                       // waits 15ms for the servo to reach the position
-  }
+  // for (pos = 90; pos >= 0; pos -= 10) { // goes from 180 degrees to 0 degrees
+  //   myservo.write(pos);              // tell servo to go to position in variable 'pos'
+  //   myservo2.write(pos);
+  //   delay(30);                       // waits 15ms for the servo to reach the position
+  // }
 }
 
 void setTimeToBrake(float timeToBeam, int piNumber) {
   time_to_beam = timeToBeam;
+  main_brakes_engaged = false;
+  aux_brakes_engaged = false;
   sendAcknowledgement("TTB" + (String)time_to_beam + "\n", piNumber);
 }
 
@@ -339,30 +347,32 @@ boolean takeActionOnByte(String inByte, int piNumber){
   if (inByte == "EM") {
     // Engage Main Brakes
     engageMainBrakes();
-    sendAcknowledgement(inByte + "\n", piNumber);
+    // sendAcknowledgement(inByte + "\n", piNumber);
   } else if (inByte == "EA") {
     // Engage Auxiliary Brakes
     engageAuxiliaryBrakes();
-    sendAcknowledgement(inByte + "\n", piNumber);
+    // sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte == "KILLPOD"){
     for (int i = 0; i < 3; i+=1){
         kill_switch();
     }
-    sendAcknowledgement("KILLPOD\n", piNumber);
+    // sendAcknowledgement("KILLPOD\n", piNumber);
 
   } else if (inByte == "PM") {
-    pulseMainBrakes();
+    if (!main_brakes_engaging) {
+      pulseMainBrakes();
+    }
   } else if (inByte == "PA") {
-    pulseAuxBrakes();
+    if (!aux_brakes_engaging) {
+      pulseAuxBrakes();
+    }
   } else if (inByte == "RM") {
     // Release Main Brakes
     if (stopped_flag == true){
       offMainBrakes();
       releaseMainBrakes();
-      delay(brake_release_time);
-      offMainBrakes();
-      sendAcknowledgement(inByte + "\n", piNumber);
+      // sendAcknowledgement(inByte + "\n", piNumber);
     } else{
       sendAcknowledgement(inByte + " Ignored\n", piNumber);
     }
@@ -372,33 +382,7 @@ boolean takeActionOnByte(String inByte, int piNumber){
     if (stopped_flag == true){
       offAuxiliaryBrakes();
       releaseAuxiliaryBrakes();
-      delay(brake_release_time);
-      offAuxiliaryBrakes();
-      sendAcknowledgement(inByte + "\n", piNumber);
-    } else{
-      sendAcknowledgement(inByte + " Ignored\n", piNumber);
-    }
-
-  } else if (inByte == "LL") {
-    // Lower Linear Actuators
-    if (stopped_flag == true){
-      offLinearActuators();
-      lowerLinearActuators();
-      delay(actuator_active_time);
-      offLinearActuators();
-      sendAcknowledgement(inByte + "\n", piNumber);
-    } else{
-      sendAcknowledgement(inByte + " Ignored\n", piNumber);
-    }
-
-  } else if (inByte == "RL") {
-    // Raise Linear Actuators
-    if (stopped_flag == true){
-      offLinearActuators();
-      raiseLinearActuators();
-      delay(actuator_active_time);
-      offLinearActuators();
-      sendAcknowledgement(inByte + "\n", piNumber);
+      // sendAcknowledgement(inByte + "\n", piNumber);
     } else{
       sendAcknowledgement(inByte + " Ignored\n", piNumber);
     }
@@ -416,15 +400,6 @@ boolean takeActionOnByte(String inByte, int piNumber){
     // Turn off Auxiliary Brakes
     if (stopped_flag == true){
       offAuxiliaryBrakes();
-      sendAcknowledgement(inByte + "\n", piNumber);
-    } else{
-      sendAcknowledgement(inByte + " Ignored\n", piNumber);
-    }
-
-  } else if (inByte == "OL") {
-    // Turn off Linear Actuators
-    if (stopped_flag == true){
-      offLinearActuators();
       sendAcknowledgement(inByte + "\n", piNumber);
     } else{
       sendAcknowledgement(inByte + " Ignored\n", piNumber);
@@ -450,19 +425,6 @@ boolean takeActionOnByte(String inByte, int piNumber){
 
   } else if (inByte == "STATUS"){
     sendStatus(piNumber);
-
-  } else if (inByte == "FW"){
-    goForward();
-    sendAcknowledgement(inByte + "\n", piNumber);
-  } else if (inByte == "BW"){
-    goBackward();
-    sendAcknowledgement(inByte + "\n", piNumber);
-  } else if (inByte == "BK") {
-    bldcBrake();
-    sendAcknowledgement(inByte + "\n", piNumber);
-  } else if (inByte == "OB") {
-    bldcOff();
-    sendAcknowledgement(inByte + "\n", piNumber);
 
   } else if (inByte.substring(0,3) == "TTB") {
     setTimeToBrake(inByte.substring(3).toFloat(), piNumber);

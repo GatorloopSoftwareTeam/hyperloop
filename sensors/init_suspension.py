@@ -28,14 +28,14 @@ def recieve_suspension_tcp(tcp_sock, pod_data, logging):
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BBH', vcu_tcp_received_message)
             logging.debug('received: START SCU REPLY \TypeID: %d PayloadLength: %d Start Fault %d' % scu_message_request)
             # Check Suspension Response
-            if (scu_message_request[2]==0x00):
+            if (scu_message_request[2]==0x00 or scu_message_request[2]==0x04):
                 # We received a successful response
                 pod_data.scu_sus_started_tcp = True
 
         elif (scu_message_request[0] == 0x54): # STOP SCU REPLY
             scu_message_request =  struct.unpack_from(constants.network_endinanness+'BBH', vcu_tcp_received_message)
             logging.debug('received: STOP SCU REPLY \TypeID: %d PayloadLength: %d Stop Fault %d' % scu_message_request)
-            if (scu_message_request[2]==0x00):
+            if (scu_message_request[2]==0x00 or scu_message_request[2]==0x03):
                 # We received a successful response
                 pod_data.scu_sus_started_tcp = False
 
@@ -84,17 +84,17 @@ def recieve_suspension_udp(pod_data, logging):
                     #logging.debug(vcu_udp_received_message[9])
                     #logging.debug(vcu_udp_received_message[10])
                     if vcu_udp_received_message[9] == 0 and vcu_udp_received_message[10] == 4:
-                        # logging.debug("Suspension: No fault and sus started")
+                        #logging.debug("Suspension: No fault and sus started")
                         pod_data.scu_sus_started_udp = True
                     # TODO: make sure the fault code when sus is already started is actually 2
-                    elif vcu_udp_received_message[9] == 2 and vcu_udp_received_message[10] == 4:
-                        # logging.debug("Suspension: Fault 2 (already started) and sus started")
+                    elif vcu_udp_received_message[9] == 4 and vcu_udp_received_message[10] == 4:
+                        #logging.debug("Suspension: Fault 4 (already started) and sus started")
                         pod_data.scu_sus_started_udp = True
                     elif vcu_udp_received_message[9] == 0 and vcu_udp_received_message[10] == 3:
-                        # logging.debug("Suspension: No fault and sus stopp")
+                        #logging.debug("Suspension: No fault and sus stopp")
                         pod_data.scu_sus_started_udp = False
-                    # elif vcu_udp_received_message[9] == 2 and vcu_udp_received_message[10] == 3:
-                        # logging.debug("Suspension: Fault 2 (already stopped) and sus stopped")
+                    # elif vcu_udp_received_message[9] == 3 and vcu_udp_received_message[10] == 3:
+                        #logging.debug("Suspension: Fault 3 (already stopped) and sus stopped")
                     #faults is [9]
                     #status is [10]
                 elif (vcu_udp_received_message[0] == 0x22):
@@ -142,6 +142,7 @@ def init_suspension(pod_data, logging):
             # Wait for the udp stream data that says suspension on
             while pod_data.scu_sus_started_udp == False:
                 time.sleep(1)
+                tcp_sock.send(constants.start_scu_message_req)
                 continue
             logging.debug("Suspension is on, sleeping 5 secs")
 
@@ -154,6 +155,7 @@ def init_suspension(pod_data, logging):
             # Wait for the udp stream data that says suspension off
             while pod_data.scu_sus_started_udp == True:
                 time.sleep(1)
+                tcp_sock.send(constants.stop_scu_message_req)
                 continue
             logging.debug("Suspension is off")
 

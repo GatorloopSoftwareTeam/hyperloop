@@ -38,14 +38,14 @@ def init_battery_temperature(pod_data, sql_wrapper, logging):
     a2_file = _get_device_path(constants.AUX_BATTERY_2)
     a3_file = _get_device_path(constants.AUX_BATTERY_3)
 
-    if constants.COMPUTER == "main":
-        device_files = [m1_file, m2_file, m3_file] #, a1_file, a2_file, a3_file]
-    else:
-        device_files = [a1_file, a2_file, a3_file]
-    if constants.computer == "main":
-        sensor_number = 1
-    else:
-        sensor_number = 3
+    # if constants.COMPUTER == "main":
+    device_files = [m1_file, m2_file, m3_file] #, a1_file, a2_file, a3_file]
+    # else:
+    #     device_files = [a1_file, a2_file, a3_file]
+    # if constants.computer == "main":
+    sensor_number = 1
+    # else:
+    #     sensor_number = 3
     for device_file in device_files:
         initialized = False
         while not initialized:
@@ -63,23 +63,23 @@ def init_battery_temperature(pod_data, sql_wrapper, logging):
                                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
                 elif sensor_number == 2:
                     pod_data.main_battery_2_temp = formatted_temp_string
-                    sql_wrapper.execute("""INSERT INTO battery_m2_temp VALUES (NULL, %s,%f)""",
+                    sql_wrapper.execute("""INSERT INTO battery_m2_temp VALUES (NULL, %s,%s)""",
                                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
                 elif sensor_number == 3:
                     pod_data.main_battery_3_temp = formatted_temp_string
-                    sql_wrapper.execute("""INSERT INTO battery_m3_temp VALUES (NULL, %s,%f)""",
+                    sql_wrapper.execute("""INSERT INTO battery_m3_temp VALUES (NULL, %s,%s)""",
                                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
                 elif sensor_number == 4:
                     pod_data.aux_battery_1_temp = formatted_temp_string
-                    sql_wrapper.execute("""INSERT INTO battery_a1_temp VALUES (NULL, %s,%f)""",
+                    sql_wrapper.execute("""INSERT INTO battery_a1_temp VALUES (NULL, %s,%s)""",
                                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
                 elif sensor_number == 5:
                     pod_data.aux_battery_2_temp = formatted_temp_string
-                    sql_wrapper.execute("""INSERT INTO battery_a2_temp VALUES (NULL, %s,%f)""",
+                    sql_wrapper.execute("""INSERT INTO battery_a2_temp VALUES (NULL, %s,%s)""",
                                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
                 elif sensor_number == 6:
                     pod_data.aux_battery_3_temp = formatted_temp_string
-                    sql_wrapper.execute("""INSERT INTO battery_a3_temp VALUES (NULL, %s,%f)""",
+                    sql_wrapper.execute("""INSERT INTO battery_a3_temp VALUES (NULL, %s,%s)""",
                                         (datetime.datetime.now().strftime(constants.TIME_FORMAT), formatted_temp_string))
                 # checks for an invalid temp
                 if formatted_temp_string >= constants.BATTERY_MAX_TEMP or (0 < formatted_temp_string < constants.BATTERY_LOW_TEMP):
@@ -89,7 +89,7 @@ def init_battery_temperature(pod_data, sql_wrapper, logging):
                     sql_wrapper.execute("""INSERT INTO states VALUES (NULL, %s,%s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "FAULT STATE"))
                 # checks for a valid temp
                 elif  constants.BATTERY_LOW_TEMP <= formatted_temp_string <= constants.BATTERY_MAX_TEMP:
-                    logging.debug("Initialized temp sensor %s with temp %f", (device_file, formatted_temp_string))
+                    logging.debug("Initialized temp sensor %s with temp %f" % (device_file, formatted_temp_string))
                     if sensor_number == 1:
                         pod_data.main_battery_1_temp = formatted_temp_string
                     elif sensor_number == 2:

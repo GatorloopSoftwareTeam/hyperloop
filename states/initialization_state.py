@@ -32,17 +32,17 @@ def start(pod_data, sql_wrapper, drive_controller):
     GPIO.setup(27, GPIO.OUT)
 
     # clear out old data
-    sql_wrapper.execute("""DELETE FROM acc""",())
-    sql_wrapper.execute("""DELETE FROM battery_m1_temp""",())
-    sql_wrapper.execute("""DELETE FROM battery_m2_temp""",())
-    sql_wrapper.execute("""DELETE FROM battery_m3_temp""",())
-    sql_wrapper.execute("""DELETE FROM bms""",())
-    sql_wrapper.execute("""DELETE FROM calc_acc""",())
-    sql_wrapper.execute("""DELETE FROM proc_temp""",())
-    sql_wrapper.execute("""DELETE FROM roofspeed""",())
-    sql_wrapper.execute("""DELETE FROM states""",())
-    sql_wrapper.execute("""DELETE FROM wheel1speed""",())
-    sql_wrapper.execute("""DELETE FROM wheel2speed""",())
+    # sql_wrapper.execute("""DELETE FROM acc""",())
+    # sql_wrapper.execute("""DELETE FROM battery_m1_temp""",())
+    # sql_wrapper.execute("""DELETE FROM battery_m2_temp""",())
+    # sql_wrapper.execute("""DELETE FROM battery_m3_temp""",())
+    # sql_wrapper.execute("""DELETE FROM bms""",())
+    # sql_wrapper.execute("""DELETE FROM calc_acc""",())
+    # sql_wrapper.execute("""DELETE FROM proc_temp""",())
+    # sql_wrapper.execute("""DELETE FROM roofspeed""",())
+    # sql_wrapper.execute("""DELETE FROM states""",())
+    # sql_wrapper.execute("""DELETE FROM wheel1speed""",())
+    # sql_wrapper.execute("""DELETE FROM wheel2speed""",())
 
     # save initialization state to database
     sql_wrapper.execute("""INSERT INTO states VALUES (NULL, %s, %s)""", (datetime.datetime.now().strftime(constants.TIME_FORMAT), "INITIALIZATION STARTED"))
@@ -61,16 +61,16 @@ def start(pod_data, sql_wrapper, drive_controller):
     thread.start_new_thread(get_bms, (pod_data, sql_wrapper, logging))
 
     # make sure modprobe commands have been run to init temp sensors
-    #init_battery_temperature(pod_data, sql_wrapper, logging)
-    #thread.start_new_thread(get_battery_temperature, (pod_data, sql_wrapper, logging))
+    init_battery_temperature(pod_data, sql_wrapper, logging)
+    thread.start_new_thread(get_battery_temperature, (pod_data, sql_wrapper, logging))
     #thread.start_new_thread(receive_battery_temperature_udp, (pod_data, logging))
     #thread.start_new_thread(battery_temp_reporter,(pod_data,logging))
     # send a ping to the suspension unit
     suspension_tcp_socket = init_suspension(pod_data, logging)
 
     # start listeners to catch emergency brake or kill power signals
-    thread.start_new_thread(emergency_brake_listener.start_listener, (pod_data,))
-    thread.start_new_thread(kill_power_listener.start_listener, ())
+    thread.start_new_thread(emergency_brake_listener.start_listener, (pod_data, sql_wrapper, drive_controller))
+    thread.start_new_thread(kill_power_listener.start_listener, (pod_data, sql_wrapper))
 
     drive_controller.set_time_to_brake(constants.TIME_TO_BEAM)
     response = drive_controller.get_response()
